@@ -37,3 +37,17 @@ export type FileData = {
     fileID: number,
     name: string
 }
+
+export type RegsiterData = {
+    is_employee: string | null,
+    username: string | null,
+    password: string | null,
+    repeat_password: string | null,
+    authentication_code?: string | null,
+    email?: string | null,
+    firstname?: string | null,
+    lastname?: string | null,
+    prefered_payment_method?: 'paypal' | 'bank' | null,
+    address?: string | null,
+    stayLoggedIn: boolean | null
+}

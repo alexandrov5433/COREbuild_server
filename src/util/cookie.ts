@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { validateJWT } from "./jwt.ts";
 
 async function checkCookie(req: Request, res: Response, next: NextFunction) {
-    console.log('req.cookies', req.cookies);
-    
     if (req.cookies.session) {
         try {
             const payload = await validateJWT(req.cookies.session);

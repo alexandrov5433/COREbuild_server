@@ -7,3 +7,10 @@ export const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
+
+export async function verifyDBConnection() {
+  const client = await pool.connect();
+  await client.query('SELECT NOW()');
+  client.release();
+  return true;
+}
