@@ -10,7 +10,7 @@ export default function logout(req: Request, res: Response) {
         return;
     }
     res.status(200);
-    res.setHeader('Set-Cookie', `session=0; Max-Age=0; Path=/;`);
+    res.setHeader('Set-Cookie', `session=0; Max-Age=0; Path=/; HttpOnly; Secure;`);
     res.json({
         msg: 'Logout successful.'
     });

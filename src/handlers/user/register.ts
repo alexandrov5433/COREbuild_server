@@ -3,6 +3,7 @@ import { RegsiterData } from "../../data/definitions.ts";
 import bcrypt from "bcryptjs";
 import { addNewCustomer, addNewEmployee } from "../../data/user.ts";
 import { QueryResult } from "pg";
+import { createJWT } from "../../util/jwt.ts";
 
 const HASH_SALT_ROUNDS = Number(process.env.HASH_SALT_ROUNDS) || 10;
 const EMPLOYEE_AUTH_CODE = process.env.EMPLOYEE_AUTH_CODE;
@@ -34,53 +35,52 @@ export default async function register(req: Request, res: Response) {
         if (registerData.is_employee) {
             const validationObject = validateEmployeeData(registerData);
             if (isInformationValid(validationObject)) {
-                // registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
-                // dbResponse = await addNewEmployee(registerData);
-                console.log('OK');
-                
+                registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
+                dbResponse = await addNewEmployee(registerData);
             } else {
-                console.log('invalid');
                 res.status(400);
-                res.json(JSON.stringify({
+                res.json({
                     msg: 'Invalid registration data.',
                     payload: validationObject
-                }));
+                });
                 res.end();
                 return;
             }
         } else {
             const validationObject = validateCustomerData(registerData);
             if (isInformationValid(validationObject)) {
-                // registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
-                // dbResponse = await addNewCustomer(registerData);
-                console.log('OK cust');
-
+                registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
+                dbResponse = await addNewCustomer(registerData);
             } else {
-                console.log('invalid');
                 res.status(400);
-                res.json(JSON.stringify({
+                res.json({
                     msg: 'Invalid registration data.',
                     payload: validationObject
-                }));
+                });
                 res.end();
                 return;
             }
         }
-        console.log('dbResponse', dbResponse);
-
-
-
-
-
-
-
-
+        const jwt = await createJWT({ userID: dbResponse?.rows[0].userID });
+        // 1 Year = 31,556,952 Seconds
+        const cookieMaxAge = registerData.stayLoggedIn ? ' Max-Age=31556952;' : '';
+        console.log('New User Created ID:', dbResponse?.rows[0].userID);
+        
         res.status(200);
-        // res.setHeader('Set-Cookie', `session=0; Max-Age=0; Path=/;`);
-        res.json(JSON.stringify({
-            msg: 'OK',
-            // payload: dbResponse
-        }));
+        res.setHeader('Set-Cookie', `session=${jwt};${cookieMaxAge} Path=/; HttpOnly; Secure;`);
+        res.json({
+            msg: 'Registration successful.',
+            payload: {
+                userID: dbResponse?.rows[0].userID,
+                is_employee: dbResponse?.rows[0].is_employee,
+                username: dbResponse?.rows[0].username,
+                email: dbResponse?.rows[0].email || null,
+                firstname: dbResponse?.rows[0].firstname || null,
+                lastname: dbResponse?.rows[0].lastname || null,
+                prefered_payment_method: dbResponse?.rows[0].prefered_payment_method || null,
+                address: dbResponse?.rows[0].address || null
+            }
+        });
         res.end();
     } catch (e) {
         console.log('ERROR:', e.message);
