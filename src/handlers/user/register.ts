@@ -28,9 +28,6 @@ export default async function register(req: Request, res: Response) {
             stayLoggedIn: req.body.stayLoggedIn || null,
             authentication_code: req.body.authentication_code || null
         };
-
-        console.log('registerData', registerData);
-
         let dbResponse: QueryResult<any> | null = null;
         if (registerData.is_employee) {
             const validationObject = validateEmployeeData(registerData);
