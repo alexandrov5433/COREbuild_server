@@ -4,7 +4,20 @@ import { RegsiterData } from "./definitions.ts";
 export async function findUserByUsername(username: string) {
     const client = await pool.connect();
     try {
-        const res = await client.query(`FROM user SELECT * WHERE (username=${username})`)
+        const res = await client.query(`SELECT * FROM "user" WHERE (username='${username}')`)
+        return res;
+    } catch (e) {
+        console.error(e.message);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function findUserByUserID(userID: number) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`SELECT * FROM "user" WHERE ("userID"=${userID})`)
         return res;
     } catch (e) {
         console.error(e.message);
@@ -17,22 +30,21 @@ export async function findUserByUsername(username: string) {
 export async function addNewCustomer(registerData: RegsiterData) {
     const client = await pool.connect();
     try {
-        const res = await client.query(`
-            INSERT INTO user VALUES(
+        return await client.query(`
+            INSERT INTO "user" VALUES(
                 DEFAULT,
                 ${false},
-                ${registerData.username},
-                ${registerData.password},
-                ${registerData.email},
-                ${registerData.firstname},
-                ${registerData.lastname},
-                ${registerData.prefered_payment_method},
-                ${registerData.address},
+                '${registerData.username}',
+                '${registerData.password}',
+                '${registerData.email}',
+                '${registerData.firstname}',
+                '${registerData.lastname}',
+                '${registerData.prefered_payment_method}',
+                '${registerData.address}',
                 DEFAULT,
                 DEFAULT)
             RETURNING *
             `);
-        return res;
     } catch (e) {
         console.error(e.message);
         return null;
@@ -44,12 +56,12 @@ export async function addNewCustomer(registerData: RegsiterData) {
 export async function addNewEmployee(registerData: RegsiterData) {
     const client = await pool.connect();
     try {
-        const res = await client.query(`
-            INSERT INTO user VALUES(
+        return await client.query(`
+            INSERT INTO "user" VALUES(
                 DEFAULT,
                 ${true},
-                ${registerData.username},
-                ${registerData.password},
+                '${registerData.username}',
+                '${registerData.password}',
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
@@ -59,7 +71,6 @@ export async function addNewEmployee(registerData: RegsiterData) {
                 DEFAULT)
             RETURNING *
             `);
-        return res;
     } catch (e) {
         console.error(e.message);
         return null;
