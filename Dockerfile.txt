@@ -1,0 +1,30 @@
+FROM node:22
+WORKDIR /
+COPY ["--exclude=.git", "--exclude=.gitignore", "--exclude=node_modules", "--exclude=.env", "--exclude=src"] . .
+ENV PORT=3000
+    JWT_KEY="n4X8k9rX0#B*;A365DNU+h{fThp)6}=ubQ##i[GcNPPVMy{AamC9,.WUM$!P"
+    EMPLOYEE_AUTH_CODE="123asd"
+    HASH_SALT_ROUNDS=10
+    NODE_ENV="production"
+
+    DATABASE_URL="postgres://neondb_owner:npg_GhEa4RTQMCt9@ep-shiny-glade-a4azdo5r-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+    DATABASE_URL_UNPOOLED="postgresql://neondb_owner:npg_GhEa4RTQMCt9@ep-shiny-glade-a4azdo5r.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+    PGHOST="ep-shiny-glade-a4azdo5r-pooler.us-east-1.aws.neon.tech"
+    PGHOST_UNPOOLED="ep-shiny-glade-a4azdo5r.us-east-1.aws.neon.tech"
+    PGUSER="neondb_owner"
+    PGDATABASE="neondb"
+    PGPASSWORD="npg_GhEa4RTQMCt9"
+
+    POSTGRES_URL="postgres://neondb_owner:npg_GhEa4RTQMCt9@ep-shiny-glade-a4azdo5r-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
+    POSTGRES_URL_NON_POOLING="postgres://neondb_owner:npg_GhEa4RTQMCt9@ep-shiny-glade-a4azdo5r.us-east-1.aws.neon.tech/neondb?sslmode=require"
+    POSTGRES_USER="neondb_owner"
+    POSTGRES_HOST="ep-shiny-glade-a4azdo5r-pooler.us-east-1.aws.neon.tech"
+    POSTGRES_PASSWORD="npg_GhEa4RTQMCt9"
+    POSTGRES_DATABASE="neondb"
+    POSTGRES_URL_NO_SSL="postgres://neondb_owner:npg_GhEa4RTQMCt9@ep-shiny-glade-a4azdo5r-pooler.us-east-1.aws.neon.tech/neondb"
+    POSTGRES_PRISMA_URL="postgres://neondb_owner:npg_GhEa4RTQMCt9@ep-shiny-glade-a4azdo5r-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&connect_timeout=15&sslmode=require"
+RUN npm install --production
+EXPOSE 3000
+CMD ["node", "run", "start"]
