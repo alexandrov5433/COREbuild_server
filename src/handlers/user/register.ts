@@ -91,8 +91,8 @@ export default async function register(req: Request, res: Response) {
 
 function validateEmployeeData(registerData: RegsiterData) {
     const is_employeeValid = registerData.is_employee === 'on';
-    const usernameValid = /^[A-Za-z0-9@_+?!-]{1,20}$/.test(registerData.username || '');
-    const passwordValid = /^[A-Za-z0-9@_+?!-]{5,20}$/.test(registerData.password || '');
+    const usernameValid = /^[A-Za-z0-9@_+?!-]{1,30}$/.test(registerData.username || '');
+    const passwordValid = /^[A-Za-z0-9@_+?!-]{5,50}$/.test(registerData.password || '');
     const repeat_passwordValid = registerData.password === registerData.repeat_password;
     const authentication_codeValid = registerData.authentication_code === EMPLOYEE_AUTH_CODE;
     return {
@@ -102,11 +102,11 @@ function validateEmployeeData(registerData: RegsiterData) {
         },
         username: {
             valid: usernameValid,
-            msg: `${usernameValid ? '' : 'The username can be maximum 20 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
+            msg: `${usernameValid ? '' : 'The username can be maximum 30 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         password: {
             valid: passwordValid,
-            msg: `${passwordValid ? '' : 'The password can be beween 5 and 20 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
+            msg: `${passwordValid ? '' : 'The password can be beween 5 and 50 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         repeat_password: {
             valid: repeat_passwordValid,
@@ -121,8 +121,8 @@ function validateEmployeeData(registerData: RegsiterData) {
 
 function validateCustomerData(registerData: RegsiterData) {
     const is_employeeValid = !Boolean(registerData.is_employee); // true when is_employee is falsy; customer is not an employee
-    const usernameValid = /^[A-Za-z0-9@_+?!-]{1,20}$/.test(registerData.username || '');
-    const passwordValid = /^[A-Za-z0-9@_+?!-]{5,20}$/.test(registerData.password || '');
+    const usernameValid = /^[A-Za-z0-9@_+?!-]{1,30}$/.test(registerData.username || '');
+    const passwordValid = /^[A-Za-z0-9@_+?!-]{5,50}$/.test(registerData.password || '');
     const repeat_passwordValid = registerData.password === registerData.repeat_password;
     const emailValid = /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/.test(registerData.email || '');
     const firstnameValid = /^[A-Za-z]{1,50}$/.test(registerData.firstname || '');
@@ -137,11 +137,11 @@ function validateCustomerData(registerData: RegsiterData) {
         },
         username: {
             valid: usernameValid,
-            msg: `${usernameValid ? '' : 'The username can be maximum 20 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
+            msg: `${usernameValid ? '' : 'The username can be maximum 30 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         password: {
             valid: passwordValid,
-            msg: `${passwordValid ? '' : 'The password can be beween 5 and 20 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
+            msg: `${passwordValid ? '' : 'The password can be beween 5 and 50 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         repeat_password: {
             valid: repeat_passwordValid,
