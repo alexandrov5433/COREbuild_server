@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { RegsiterData } from "../../data/definitions.ts";
+import { RegsiterData } from "../../data/definitions.js";
 import bcrypt from "bcryptjs";
-import { addNewCustomer, addNewEmployee } from "../../data/user.ts";
+import { addNewCustomer, addNewEmployee } from "../../data/user.js";
 import { QueryResult } from "pg";
-import { createJWT } from "../../util/jwt.ts";
+import { createJWT } from "../../util/jwt.js";
 
 const HASH_SALT_ROUNDS = Number(process.env.HASH_SALT_ROUNDS) || 10;
 const EMPLOYEE_AUTH_CODE = process.env.EMPLOYEE_AUTH_CODE;

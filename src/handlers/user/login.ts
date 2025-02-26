@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { createJWT } from "../../util/jwt.ts";
-import { findUserByUsername } from "../../data/user.ts";
+import { createJWT } from "../../util/jwt.js";
+import { findUserByUsername } from "../../data/user.js";
 import bcrypt from "bcryptjs";
 
 export default async function login(req: Request, res: Response) {

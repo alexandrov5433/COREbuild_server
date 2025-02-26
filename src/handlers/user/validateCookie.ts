@@ -1,7 +1,6 @@
-
 import { Request, Response } from 'express';
-import { JwtPayload } from '../../util/jwt.ts';
-import { findUserByUserID } from '../../data/user.ts';
+import { JwtPayload } from '../../util/jwt.js';
+import { findUserByUserID } from '../../data/user.js';
 
 export default async function validateCookie(req: Request, res: Response) {
     try {

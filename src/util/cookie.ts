@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validateJWT } from "./jwt.ts";
+import { validateJWT } from "./jwt.js";
 
 async function checkCookie(req: Request, res: Response, next: NextFunction) {
     if (req.cookies.session) {

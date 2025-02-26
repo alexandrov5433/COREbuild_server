@@ -1,5 +1,5 @@
-import { pool } from "./postgres.ts";
-import { RegsiterData } from "./definitions.ts";
+import { pool } from "./postgres.js";
+import { RegsiterData } from "./definitions.js";
 
 export async function findUserByUsername(username: string) {
     const client = await pool.connect();
