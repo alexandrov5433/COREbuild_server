@@ -1,8 +1,9 @@
 {
-  "name": "serverdemo",
+  "name": "corebuild_server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node --env-file=.env ./dist_server/index.js",
     "dev": "tsx --env-file=.env --watch  src/index.ts"
   },
   "keywords": [],
@@ -11,10 +12,6 @@
   "type": "module",
   "description": "",
   "dependencies": {
-    "@types/cookie-parser": "^1.4.8",
-    "@types/cors": "^2.8.17",
-    "@types/jsonwebtoken": "^9.0.8",
-    "@types/pg": "^8.11.11",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -23,6 +20,10 @@
     "pg": "^8.13.3"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.8",
+    "@types/pg": "^8.11.11",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.4",
     "ts-node": "^10.9.2",
