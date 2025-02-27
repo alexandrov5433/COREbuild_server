@@ -9,10 +9,7 @@ router.post('/api/register', register);
 router.get('/api/logout', logout);
 router.get('/api/validate-cookie', validateCookie);
 router.all('*', (req, res) => {
-    res.status(404);
-    res.json({
-        msg: `The route: "${req.url}" is not valid.`
-    });
+    res.redirect('/index.html');
     res.end();
 });
 export { router };
