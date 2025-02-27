@@ -7,7 +7,7 @@ import path from 'node:path';
 import { verifyDBConnection } from '../data/postgres.js'; //init Pool instance and check connection to DB
 
 // const corsOrigin = process.env.CORS_ORIGIN || '';
-const appAssetsPath = path.resolve('./dist');
+const appAssetsPath = path.resolve('./dist_app');
 
 export default async function configExpress(app: any) {
     try {
