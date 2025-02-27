@@ -38,3 +38,4 @@ CREATE TABLE "file" (
     "name" text NOT NULL
 );
 
+DROP TABLE IF EXISTS "user", "product", "review", "file" CASCADE;
