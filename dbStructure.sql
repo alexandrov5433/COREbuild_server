@@ -19,7 +19,7 @@ CREATE TABLE "product" (
     "price" int NOT NULL,
     "stockCount" int NOT NULL,
     "manufacturer" varchar(200) NOT NULL,
-    "specsDoc" int DEFAULT NULL,
+    "specsDocID" int DEFAULT NULL,
     "thumbnailID" int NOT NULL REFERENCES "file" ("fileID"),
     "pictures" int[] DEFAULT array[]::int[],
     "reviews" int[] DEFAULT array[]::int[]
