@@ -1,2 +1,4 @@
 .env
 node_modules
+fileStorage/docs/*
+fileStorage/pics/*
