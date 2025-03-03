@@ -19,10 +19,21 @@ export type ProductData = {
     price: number,
     stockCount: number,
     manufacturer: string,
-    specsDoc: number,
+    specsDocID: number,
     thumbnailID: number,
     pictures: Array<number>,
     reviews: Array<number>
+}
+
+export type ProductCreationData = {
+    name: string,
+    description: string,
+    price: number,
+    stockCount: number,
+    manufacturer: string,
+    specsDocID: number,
+    thumbnailID: number,
+    pictures: Array<number>
 }
 
 export type ReviewData = {
