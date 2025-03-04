@@ -16,6 +16,7 @@ CREATE TABLE "product" (
     "productID" SERIAL PRIMARY KEY,
     "name" varchar(200) NOT NULL,
     "description" text NOT NULL,
+    "categoryID" int NOT NULL REFERENCES "category" ("categoryID"),
     "price" int NOT NULL,
     "stockCount" int NOT NULL,
     "manufacturer" varchar(200) NOT NULL,
@@ -38,4 +39,9 @@ CREATE TABLE "file" (
     "name" text NOT NULL
 );
 
-DROP TABLE IF EXISTS "user", "product", "review", "file" CASCADE;
+CREATE TABLE "category" (
+    "categoryID" SERIAL PRIMARY KEY,
+    "name" varchar(200) NOT NULL UNIQUE 
+);
+
+DROP TABLE IF EXISTS "user", "product", "review", "file", "category" CASCADE;
