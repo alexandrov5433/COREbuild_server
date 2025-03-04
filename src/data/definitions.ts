@@ -16,6 +16,7 @@ export type ProductData = {
     productID: number,
     name: string,
     description: string,
+    categoryID: number,
     price: number,
     stockCount: number,
     manufacturer: string,
@@ -28,6 +29,8 @@ export type ProductData = {
 export type ProductCreationData = {
     name: string,
     description: string,
+    category: string,
+    categoryID: number,
     price: number,
     stockCount: number,
     manufacturer: string,
@@ -61,4 +64,9 @@ export type RegsiterData = {
     prefered_payment_method?: 'paypal' | 'bank' | null,
     address?: string | null,
     stayLoggedIn: boolean | null
+}
+
+export type CategoryData = {
+    categoryID: number,
+    name: string
 }
