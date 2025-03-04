@@ -11,6 +11,7 @@ export async function createProduct(productData: ProductCreationData) {
                 DEFAULT,
                 '${productData.name}',
                 '${productData.description}',
+                ${productData.categoryID},
                 ${productData.price},
                 ${productData.stockCount},
                 '${productData.manufacturer}',
