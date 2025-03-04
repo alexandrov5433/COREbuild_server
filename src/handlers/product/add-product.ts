@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createFile } from "../../data/file.js";
 import { createProduct } from "../../data/product.js";
 import { ProductCreationData } from "../../data/definitions.js";
+import { createCategory } from "../../data/category.js";
 
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
@@ -24,18 +25,63 @@ export default async function addProduct(req: Request, res: Response) {
         }
 
         const productData: ProductCreationData = {
-            name: req.body.name as string || null,
-            description: req.body.description as string || null,
+            name: (req.body.name as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
+            description: (req.body.description as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
+            category: (req.body.category as string).trim().toLowerCase().replaceAll(/[%&\$\*_'"]/g, '') || null,
+            categoryID: null,
             price: Number(req.body.price) || null,
-            stockCount: Number(req.body.price) || null,
-            manufacturer: req.body.manufacturer as string || null,
+            stockCount: Number(req.body.stockCount) || null,
+            manufacturer: (req.body.manufacturer as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
             thumbnailID: 0,
             pictures: null,
             specsDocID: null
         };
+        console.log(productData);
+        
         const thumbnailFile = req.files.thumbnail as UploadedFile || null;
         const picturesFiles = req.files.pictures || null;
         const specsDocFile = req.files.specsDoc as UploadedFile || null;
+
+        if (!productData.name) {
+            res.status(400)
+                .json({
+                    msg: `The product name is missing.`
+                })
+                .end();
+            return;
+        }
+        if (!productData.description) {
+            res.status(400)
+                .json({
+                    msg: `The product description is missing.`
+                })
+                .end();
+            return;
+        }
+        if (!productData.category) {
+            res.status(400)
+                .json({
+                    msg: `The product category is missing.`
+                })
+                .end();
+            return;
+        }
+        if (!productData.price || productData.price <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price.toString())) {
+            res.status(400)
+                .json({
+                    msg: `The price must be greater than 0. Please use a dot as a decimal separator. E.g.: '01.23', '23.03' or '0.01'.`
+                })
+                .end();
+            return;
+        }
+        if (!productData.stockCount || productData.stockCount < 0 || !Number.isInteger(productData.stockCount)) {
+            res.status(400)
+                .json({
+                    msg: `The stock count must be 0 or greater and a whole number.`
+                })
+                .end();
+            return;
+        }
 
         if (!thumbnailFile) {
             res.status(400)
@@ -155,6 +201,9 @@ export default async function addProduct(req: Request, res: Response) {
         productData.pictures = pictures.length > 0 ? pictures : null;
         productData.specsDocID = specsDocID;
 
+        productData.price = Number(Number.parseFloat(`${productData.price}`).toFixed(2)) * 100; // converting to cent
+
+        productData.categoryID = (await createCategory(productData.category))?.rows[0]?.categoryID;
         const newProduct = await createProduct(productData);
 
         res.status(200)
