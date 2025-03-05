@@ -27,7 +27,7 @@ export default async function addProduct(req: Request, res: Response) {
         const productData: ProductCreationData = {
             name: (req.body.name as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
             description: (req.body.description as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
-            category: (req.body.category as string).trim().toLowerCase().replaceAll(/[%&\$\*_'"]/g, '') || null,
+            category: (req.body.category as string).trim().toLowerCase().replaceAll(/[^A-Za-z]/g, '') || null,
             categoryID: null,
             price: Number(req.body.price) || null,
             stockCount: Number(req.body.stockCount) || null,
@@ -36,8 +36,7 @@ export default async function addProduct(req: Request, res: Response) {
             pictures: null,
             specsDocID: null
         };
-        console.log(productData);
-        
+
         const thumbnailFile = req.files.thumbnail as UploadedFile || null;
         const picturesFiles = req.files.pictures || null;
         const specsDocFile = req.files.specsDoc as UploadedFile || null;
