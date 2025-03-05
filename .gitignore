@@ -2,3 +2,5 @@
 node_modules
 fileStorage/docs/*
 fileStorage/pics/*
+mock
+mock/*
