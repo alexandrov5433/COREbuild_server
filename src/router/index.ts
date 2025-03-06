@@ -5,6 +5,9 @@ import register from "../handlers/user/register.js";
 import logout from "../handlers/user/logout.js";
 import validateCookie from "../handlers/user/validateCookie.js";
 import addProduct from "../handlers/product/add-product.js";
+import productDetails from "../handlers/product/product-details.js";
+import productsCatalog from "../handlers/product/products-catalog.js";
+import file from "../handlers/file/file.js";
 
 const router = Router();
 
@@ -16,6 +19,11 @@ router.get('/api/validate-cookie', validateCookie);
 
 // product
 router.post('/api/add-product', addProduct);
+router.get('/api/product-details', productDetails);
+router.get('/api/products-catalog', productsCatalog);
+
+// file
+router.get('/api/file/:picOrDoc/:fileid', file);
 
 router.all('*', (req: Request, res: Response) => {
     res.redirect('/index.html');
