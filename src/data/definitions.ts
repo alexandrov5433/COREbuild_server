@@ -70,3 +70,12 @@ export type CategoryData = {
     categoryID: number,
     name: string
 }
+
+export type ProductsCatalogQueryParams = {
+    name?: string,
+    category?: string,
+    priceFrom?: string,
+    priceTo?: string,
+    availableInStock?: string,
+    manufacturer?: string,
+}
