@@ -63,6 +63,8 @@ export default async function file(req: Request, res: Response) {
         await sp.pipeline(fileSteam, res);
         res.end();
     } catch (e) {
+        console.log(e.message);
+        console.log(e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`
