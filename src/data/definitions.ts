@@ -72,10 +72,18 @@ export type CategoryData = {
 }
 
 export type ProductsCatalogQueryParams = {
+    currentPage: number,
+    itemsPerPage: number,
     name?: string,
     category?: string,
     priceFrom?: string,
     priceTo?: string,
     availableInStock?: string,
     manufacturer?: string,
+}
+
+export type ProductCatalogPagedResult = {
+    pagesCount: number,
+    currentPage: number,
+    products: Array<ProductData>
 }

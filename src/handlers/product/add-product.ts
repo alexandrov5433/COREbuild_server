@@ -36,8 +36,6 @@ export default async function addProduct(req: Request, res: Response) {
             pictures: null,
             specsDocID: null
         };
-        console.log(productData);
-        
         const thumbnailFile = req.files.thumbnail as UploadedFile || null;
         const picturesFiles = req.files.pictures || null;
         const specsDocFile = req.files.specsDoc as UploadedFile || null;
@@ -213,6 +211,8 @@ export default async function addProduct(req: Request, res: Response) {
             })
             .end();
     } catch (e) {
+        console.log(e.message);
+        console.log(e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`
