@@ -27,16 +27,17 @@ export default async function addProduct(req: Request, res: Response) {
         const productData: ProductCreationData = {
             name: (req.body.name as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
             description: (req.body.description as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
-            category: (req.body.category as string).trim().toLowerCase().replaceAll(/[^A-Za-z]/g, '') || null,
+            category: reduceSpacesBetweenWordsToOne((req.body.category as string).toLowerCase().replaceAll(/[^A-Za-z ]/g, '')) || null,
             categoryID: null,
-            price: Number(req.body.price) || null,
-            stockCount: Number(req.body.stockCount) || null,
+            price: Number(req.body.price),
+            stockCount: Number(req.body.stockCount),
             manufacturer: (req.body.manufacturer as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
             thumbnailID: 0,
             pictures: null,
             specsDocID: null
         };
-
+        console.log(productData);
+        
         const thumbnailFile = req.files.thumbnail as UploadedFile || null;
         const picturesFiles = req.files.pictures || null;
         const specsDocFile = req.files.specsDoc as UploadedFile || null;
@@ -73,7 +74,7 @@ export default async function addProduct(req: Request, res: Response) {
                 .end();
             return;
         }
-        if (!productData.stockCount || productData.stockCount < 0 || !Number.isInteger(productData.stockCount)) {
+        if (Number.isNaN(productData.stockCount) || productData.stockCount < 0 || !Number.isInteger(productData.stockCount)) {
             res.status(400)
                 .json({
                     msg: `The stock count must be 0 or greater and a whole number.`
@@ -220,3 +221,6 @@ export default async function addProduct(req: Request, res: Response) {
     }
 }
 
+function reduceSpacesBetweenWordsToOne(sentance: string) {
+    return sentance.trim().split(' ').filter(e => e != ' ' && e).join(' ');
+}
