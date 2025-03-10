@@ -30,7 +30,7 @@ export async function createProduct(productData: ProductCreationData) {
     }
 }
 
-export async function searchProduct(queryParams: ProductsCatalogQueryParams) {
+export async function searchProducts(queryParams: ProductsCatalogQueryParams) {
     const client = await pool.connect();
     try {
         let currentPage = Number(queryParams.currentPage) || 1;
@@ -106,29 +106,18 @@ export async function searchProduct(queryParams: ProductsCatalogQueryParams) {
         client.release();
     }
 }
-//     SELECT
-//         "productID",
-//         name,
-//         setweight(to_tsvector('english', name), 'A') ||
-//         setweight(to_tsvector('english', description), 'B') AS vector
-//     FROM product
-// )
-// SELECT
-//     product.name,
-//     ts_rank(sv.vector, to_tsquery('english', $1)) AS rank
-// FROM
-//     search_vector sv
-// JOIN
-//     product ON product."productID" = sv."productID",
-// WHERE
-//     sv.vector @@ to_tsquery('english', $1)
-// ORDER BY
-//     rank DESC;
-// WITH search_vector AS (
-//     SELECT setweight(to_tsvector('english', product.name), 'A') ||
-//         setweight(to_tsvector('english', product.description), 'B')
-// )
-// SELECT name, ts_rank(search_vector, my_query) AS rank
-// FROM product, to_tsquery('english', $1) my_query
-// WHERE search_vector @@ my_query
-// ORDER BY rank DESC;
+
+export async function findProductById(productID: number): Promise<ProductData | null> {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT * FROM product WHERE product."productID"=$1;
+            `, [productID]);
+        return res.rows[0] || null;
+    } catch (e) {
+        console.error(e.message);
+        return null;
+    } finally {
+        client.release();
+    }
+}

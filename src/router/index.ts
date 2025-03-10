@@ -19,7 +19,7 @@ router.get('/api/validate-cookie', validateCookie);
 
 // product
 router.post('/api/add-product', addProduct);
-router.get('/api/product-details', productDetails);
+router.get('/api/product-details/:productID', productDetails);
 router.get('/api/products-catalog', productsCatalog);
 
 // file
