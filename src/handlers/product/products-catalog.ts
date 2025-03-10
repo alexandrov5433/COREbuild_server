@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import url from 'node:url';
 import { ProductCatalogPagedResult, ProductsCatalogQueryParams } from "../../data/definitions.js";
-import { searchProduct } from "../../data/product.js";
+import { searchProducts } from "../../data/product.js";
 
 export default async function productsCatalog(req: Request, res: Response) {
     try {
@@ -17,7 +17,7 @@ export default async function productsCatalog(req: Request, res: Response) {
             availableInStock: allQueryParams?.availableInStock.toString() || '',
             manufacturer: allQueryParams?.manufacturer.toString() || '',
         }
-        const result: ProductCatalogPagedResult | null = await searchProduct(queryParams);    
+        const result: ProductCatalogPagedResult | null = await searchProducts(queryParams);    
         if (!result) {
             res.status(400);
             res.json({
