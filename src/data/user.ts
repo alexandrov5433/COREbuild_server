@@ -13,6 +13,30 @@ export async function findUserByUsername(username: string) {
         client.release();
     }
 }
+export async function checkUsernameTaken(username: string) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`SELECT * FROM "user" WHERE (username=$1)`, [username])
+        return (res.rows[0]?.username === username ? true : false);
+    } catch (e) {
+        console.error(e.message);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+export async function checkEmailTaken(email: string) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`SELECT * FROM "user" WHERE (email=$1)`, [email])
+        return (res.rows[0]?.email === email ? true : false);
+    } catch (e) {
+        console.error(e.message);
+        return null;
+    } finally {
+        client.release();
+    }
+}
 
 export async function findUserByUserID(userID: number) {
     const client = await pool.connect();

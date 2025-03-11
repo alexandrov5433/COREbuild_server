@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { RegsiterData } from "../../data/definitions.js";
 import bcrypt from "bcryptjs";
-import { addNewCustomer, addNewEmployee } from "../../data/user.js";
+import { addNewCustomer, addNewEmployee, checkEmailTaken, checkUsernameTaken } from "../../data/user.js";
 import { QueryResult } from "pg";
 import { createJWT } from "../../util/jwt.js";
 
@@ -30,6 +30,15 @@ export default async function register(req: Request, res: Response) {
         };
         let dbResponse: QueryResult<any> | null = null;
         if (registerData.is_employee) {
+            const isUsernameTaken = await checkUsernameTaken(registerData.username);
+            if (isUsernameTaken == true) {
+                res.status(403);
+                res.json({
+                    msg: `The username: "${registerData.username}" is already taken.`
+                });
+                res.end();
+                return;
+            }
             const validationObject = validateEmployeeData(registerData);
             if (isInformationValid(validationObject)) {
                 registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
@@ -44,6 +53,18 @@ export default async function register(req: Request, res: Response) {
                 return;
             }
         } else {
+            const areTaken = await Promise.all([
+                checkUsernameTaken(registerData.username),
+                checkEmailTaken(registerData.email)
+            ]);
+            if (areTaken.includes(true)) {
+                res.status(403);
+                res.json({
+                    msg: `The data given for the following fields is in use: ${areTaken[0] ? 'Username' : ''} ${areTaken[1] ? 'Email' : ''}`
+                });
+                res.end();
+                return;
+            }
             const validationObject = validateCustomerData(registerData);
             if (isInformationValid(validationObject)) {
                 registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
@@ -62,7 +83,7 @@ export default async function register(req: Request, res: Response) {
         // 1 Year = 31,556,952 Seconds
         const cookieMaxAge = registerData.stayLoggedIn ? ' Max-Age=31556952;' : '';
         console.log('New User Created ID:', dbResponse?.rows[0].userID);
-        
+
         res.status(200);
         res.setHeader('Set-Cookie', `session=${jwt};${cookieMaxAge} Path=/; HttpOnly; Secure;`);
         res.json({
@@ -90,16 +111,16 @@ export default async function register(req: Request, res: Response) {
 }
 
 function validateEmployeeData(registerData: RegsiterData) {
-    const is_employeeValid = registerData.is_employee === 'on';
+    // const is_employeeValid = registerData.is_employee === 'on';
     const usernameValid = /^[A-Za-z0-9@_+?!-]{1,30}$/.test(registerData.username || '');
     const passwordValid = /^[A-Za-z0-9@_+?!-]{5,50}$/.test(registerData.password || '');
     const repeat_passwordValid = registerData.password === registerData.repeat_password;
     const authentication_codeValid = registerData.authentication_code === EMPLOYEE_AUTH_CODE;
     return {
-        is_employee: {
-            valid: is_employeeValid,
-            msg: `${is_employeeValid ? '' : 'You must check the employee box.'}`
-        },
+        // is_employee: {
+        //     valid: is_employeeValid,
+        //     msg: `${is_employeeValid ? '' : 'You must check the employee box.'}`
+        // },
         username: {
             valid: usernameValid,
             msg: `${usernameValid ? '' : 'The username can be maximum 30 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
@@ -120,7 +141,7 @@ function validateEmployeeData(registerData: RegsiterData) {
 }
 
 function validateCustomerData(registerData: RegsiterData) {
-    const is_employeeValid = !Boolean(registerData.is_employee); // true when is_employee is falsy; customer is not an employee
+    // const is_employeeValid = !Boolean(registerData.is_employee); // true when is_employee is falsy; customer is not an employee
     const usernameValid = /^[A-Za-z0-9@_+?!-]{1,30}$/.test(registerData.username || '');
     const passwordValid = /^[A-Za-z0-9@_+?!-]{5,50}$/.test(registerData.password || '');
     const repeat_passwordValid = registerData.password === registerData.repeat_password;
@@ -131,10 +152,10 @@ function validateCustomerData(registerData: RegsiterData) {
     const addressValid = /^[A-Za-z0-9\., -]+$/.test(registerData.prefered_payment_method || '');
 
     return {
-        is_employee: {
-            valid: is_employeeValid,
-            msg: `${is_employeeValid ? '' : 'You must UNcheck the employee box.'}`
-        },
+        // is_employee: {
+        //     valid: is_employeeValid,
+        //     msg: `${is_employeeValid ? '' : 'You must UNcheck the employee box.'}`
+        // },
         username: {
             valid: usernameValid,
             msg: `${usernameValid ? '' : 'The username can be maximum 30 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
