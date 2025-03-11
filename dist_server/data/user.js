@@ -13,6 +13,34 @@ export async function findUserByUsername(username) {
         client.release();
     }
 }
+export async function checkUsernameTaken(username) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`SELECT * FROM "user" WHERE (username=$1)`, [username]);
+        return (res.rows[0]?.username === username ? true : false);
+    }
+    catch (e) {
+        console.error(e.message);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function checkEmailTaken(email) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`SELECT * FROM "user" WHERE (email=$1)`, [email]);
+        return (res.rows[0]?.email === email ? true : false);
+    }
+    catch (e) {
+        console.error(e.message);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
 export async function findUserByUserID(userID) {
     const client = await pool.connect();
     try {
@@ -81,3 +109,4 @@ export async function addNewEmployee(registerData) {
         client.release();
     }
 }
+//# sourceMappingURL=user.js.map

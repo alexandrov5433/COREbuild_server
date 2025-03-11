@@ -17,3 +17,4 @@ async function checkCookie(req, res, next) {
     }
 }
 export { checkCookie };
+//# sourceMappingURL=cookie.js.map

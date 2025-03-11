@@ -30,3 +30,4 @@ export async function validateJWT(token) {
         }
     });
 }
+//# sourceMappingURL=jwt.js.map

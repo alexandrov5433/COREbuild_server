@@ -10,3 +10,4 @@ export async function verifyDBConnection() {
     client.release();
     return true;
 }
+//# sourceMappingURL=postgres.js.map

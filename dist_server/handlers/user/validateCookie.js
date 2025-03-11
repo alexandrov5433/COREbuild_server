@@ -10,7 +10,6 @@ export default async function validateCookie(req, res) {
             if (dbResponse?.rows[0].userID != sessionCookie.userID) {
                 throw new Error('Invalid cookie.');
             }
-            console.log('Valid cookie. userID:', dbResponse?.rows[0].userID);
             res.status(200);
             res.json({
                 msg: `Session is valid.`,
@@ -39,3 +38,4 @@ export default async function validateCookie(req, res) {
         res.end();
     }
 }
+//# sourceMappingURL=validateCookie.js.map

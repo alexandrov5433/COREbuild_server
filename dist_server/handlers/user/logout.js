@@ -14,3 +14,4 @@ export default function logout(req, res) {
     });
     res.end();
 }
+//# sourceMappingURL=logout.js.map
