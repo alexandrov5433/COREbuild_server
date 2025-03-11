@@ -4,7 +4,8 @@
     "module": "NodeNext",
     "outDir": "dist_server",
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "sourceMap": true
   },
   "include": ["src"]
 }
