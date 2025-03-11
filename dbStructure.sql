@@ -9,8 +9,12 @@
     "prefered_payment_method" varchar(200) DEFAULT NULL,
     "address" varchar(200) DEFAULT NULL,
     "favorite_products" int[] DEFAULT array[]::int[],
-    "past_purchases" int[] DEFAULT array[]::int[]
+    "past_purchases" int[] DEFAULT array[]::int[],
+    "shopping_cart" JSONB DEFAULT '{}'
 );
+
+ALTER TABLE "user" ADD COLUMN "shopping_cart" JSONB DEFAULT NULL;
+ALTER TABLE "user" ALTER COLUMN "shopping_cart" SET DEFAULT '{}';
 
 CREATE TABLE "product" (
     "productID" SERIAL PRIMARY KEY,
