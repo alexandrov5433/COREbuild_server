@@ -7,6 +7,7 @@ import addProduct from "../handlers/product/add-product.js";
 import productDetails from "../handlers/product/product-details.js";
 import productsCatalog from "../handlers/product/products-catalog.js";
 import file from "../handlers/file/file.js";
+import addToCart from "../handlers/shoppingCart/addToCart.js";
 const router = Router();
 // user
 router.post('/api/login', login);
@@ -19,6 +20,9 @@ router.get('/api/product-details/:productID', productDetails);
 router.get('/api/products-catalog', productsCatalog);
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);
+// shopping cart
+router.post('/api/cart', addToCart);
+router.get('/api/cart/:userID');
 router.all('*', (req, res) => {
     res.redirect('/index.html');
     res.end();

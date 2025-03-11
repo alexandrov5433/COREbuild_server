@@ -57,7 +57,7 @@ export default async function register(req, res) {
             if (areTaken.includes(true)) {
                 res.status(403);
                 res.json({
-                    msg: `The data given for the following fields is in use: ${areTaken[0] ? 'username' : ''} ${areTaken[1] ? 'email' : ''}.`
+                    msg: `The data given for the following fields is in use: ${areTaken[0] ? 'Username' : ''} ${areTaken[1] ? 'Email' : ''}`
                 });
                 res.end();
                 return;

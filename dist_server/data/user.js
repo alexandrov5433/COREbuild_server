@@ -70,6 +70,7 @@ export async function addNewCustomer(registerData) {
                 '${registerData.prefered_payment_method}',
                 '${registerData.address}',
                 DEFAULT,
+                DEFAULT,
                 DEFAULT)
             RETURNING *
             `);

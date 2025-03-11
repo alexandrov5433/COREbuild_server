@@ -1,6 +1,6 @@
 export default function logout(req, res) {
     if (!req.cookies.userSession) {
-        res.status(400);
+        res.status(401);
         res.json({
             msg: 'Request is not authorized.'
         });
