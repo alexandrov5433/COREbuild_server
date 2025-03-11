@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 export default function logout(req: Request, res: Response) {
     if (!req.cookies.userSession) {
-        res.status(400);
+        res.status(401);
         res.json({
             msg: 'Request is not authorized.'
         });
