@@ -31,11 +31,20 @@ export default async function addToCart(req: Request, res: Response) {
             productToAdd.productID,
             productToAdd.count
         );
+        if (typeof updatedCart == 'string') {
+            // string (handled error message)
+            res.status(400);
+            res.json({
+                msg: updatedCart,
+            });
+            res.end();
+            return;
+        }
         if (!updatedCart) {
             // false or null (error)
             res.status(400);
             res.json({
-                msg: 'Could not add product. It may not exist or the quantity is insufficient.',
+                msg: 'And error occured while processing your request. Please try again later or contact us.',
             });
             res.end();
             return;
