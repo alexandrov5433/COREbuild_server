@@ -10,6 +10,7 @@ import productsCatalog from "../handlers/product/products-catalog.js";
 import file from "../handlers/file/file.js";
 import addToCart from "../handlers/shoppingCart/addToCart.js";
 import getCart from "../handlers/shoppingCart/getCart.js";
+import removeFromCart from "../handlers/shoppingCart/removeFromCart.js";
 
 const router = Router();
 
@@ -28,7 +29,8 @@ router.get('/api/products-catalog', productsCatalog);
 router.get('/api/file/:picOrDoc/:fileid', file);
 
 // shopping cart
-router.post('/api/cart', addToCart);
+router.post('/api/cart/add', addToCart);
+router.post('/api/cart/remove', removeFromCart);
 router.get('/api/cart/:userID', getCart);
 
 router.all('*', (req: Request, res: Response) => {
