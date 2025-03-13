@@ -11,6 +11,7 @@ import file from "../handlers/file/file.js";
 import addToCart from "../handlers/shoppingCart/addToCart.js";
 import getCart from "../handlers/shoppingCart/getCart.js";
 import removeFromCart from "../handlers/shoppingCart/removeFromCart.js";
+import placeOrder from "../handlers/order/placeOrder.js";
 
 const router = Router();
 
@@ -32,6 +33,9 @@ router.get('/api/file/:picOrDoc/:fileid', file);
 router.post('/api/cart/add', addToCart);
 router.post('/api/cart/remove', removeFromCart);
 router.get('/api/cart/:userID', getCart);
+
+// order
+router.post('/api/order', placeOrder);
 
 router.all('*', (req: Request, res: Response) => {
     res.redirect('/index.html');
