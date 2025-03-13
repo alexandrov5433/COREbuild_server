@@ -87,3 +87,16 @@ export type ProductCatalogPagedResult = {
     currentPage: number,
     products: Array<ProductData>
 }
+
+export type OrderData = {
+    id?: number,
+    payment_status: 'pending' | 'paid',
+    shipping_status: 'pending' | 'sent',
+    content: ShoppingCartData,
+    recipient: UserData['userID'],
+    placement_time: number
+}
+
+export type ShoppingCartData = {
+    [key: number]: number
+}
