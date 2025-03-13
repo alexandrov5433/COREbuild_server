@@ -48,4 +48,16 @@ CREATE TABLE "category" (
     "name" varchar(200) NOT NULL UNIQUE 
 );
 
+CREATE TYPE payment_status_options AS ENUM ('pending', 'paid');
+CREATE TYPE shipping_status_options AS ENUM ('pending', 'sent');
+
+CREATE TABLE "order" (
+    "id" SERIAL PRIMARY KEY,
+    "payment_status" payment_status_options NOT NULL,
+    "shipping_status" shipping_status_options NOT NULL,
+    "content" JSONB NOT NULL,
+    "recipient" int NOT NULL REFERENCES "user" ("userID"),
+    "placement_time" bigint NOT NULL
+)
+
 DROP TABLE IF EXISTS "user", "product", "review", "file", "category" CASCADE;
