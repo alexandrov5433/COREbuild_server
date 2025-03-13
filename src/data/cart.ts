@@ -26,7 +26,7 @@ export async function addProductToCart(userID: number, productID: number, count:
         if (count <= 0) {
             return `The number of items to add must be 1 or greater.`;
         }
-        const availableInStock = checkResults[0].rows[0].stockCount; 
+        const availableInStock = checkResults[0].rows[0].stockCount;
         if (availableInStock <= 0) {
             return `The product with ID: ${productID} is out of stock.`;
         } else if (availableInStock < count) {
@@ -40,7 +40,7 @@ export async function addProductToCart(userID: number, productID: number, count:
                 return `All pieces available in stock are already in your cart.`;
             }
             const wantedQuantity = currentQuantityInCart + count;
-            if ( availableInStock < wantedQuantity) {
+            if (availableInStock < wantedQuantity) {
                 return `We cannot add ${count} more to your cart as the sum would exceed the available in stock.`;
             }
             // availabililty check - ok
@@ -114,7 +114,7 @@ export async function removeProductFromCart(userID: number, productID: number, c
         }
         if (count <= 0) {
             return `The number of items to remove must be 1 or greater.`;
-        } 
+        }
         let userCart = checkResults[1].rows[0].shopping_cart;
         if (Object.hasOwn(userCart, productID.toString())) {
             // product is in cart
