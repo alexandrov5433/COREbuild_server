@@ -8,6 +8,9 @@ import productDetails from "../handlers/product/product-details.js";
 import productsCatalog from "../handlers/product/products-catalog.js";
 import file from "../handlers/file/file.js";
 import addToCart from "../handlers/shoppingCart/addToCart.js";
+import getCart from "../handlers/shoppingCart/getCart.js";
+import removeFromCart from "../handlers/shoppingCart/removeFromCart.js";
+import placeOrder from "../handlers/order/placeOrder.js";
 const router = Router();
 // user
 router.post('/api/login', login);
@@ -21,8 +24,11 @@ router.get('/api/products-catalog', productsCatalog);
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);
 // shopping cart
-router.post('/api/cart', addToCart);
-router.get('/api/cart/:userID');
+router.post('/api/cart/add', addToCart);
+router.post('/api/cart/remove', removeFromCart);
+router.get('/api/cart/:userID', getCart);
+// order
+router.post('/api/order', placeOrder);
 router.all('*', (req, res) => {
     res.redirect('/index.html');
     res.end();

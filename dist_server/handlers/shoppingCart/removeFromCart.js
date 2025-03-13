@@ -1,5 +1,5 @@
-import { addProductToCart } from "../../data/cart.js";
-export default async function addToCart(req, res) {
+import { removeProductFromCart } from "../../data/cart.js";
+export default async function removeFromCart(req, res) {
     try {
         const userID = req.cookies.userSession.userID;
         console.log(req.body);
@@ -11,11 +11,11 @@ export default async function addToCart(req, res) {
             res.end();
             return;
         }
-        const productToAdd = {
+        const productToRemove = {
             productID: Number(req.body.productID) || 0,
             count: Number(req.body.count) || 0,
         };
-        if (!productToAdd.productID || !productToAdd.count) {
+        if (!productToRemove.productID || !productToRemove.count) {
             res.status(400);
             res.json({
                 msg: 'Missing either prodcutID or count.'
@@ -23,7 +23,7 @@ export default async function addToCart(req, res) {
             res.end();
             return;
         }
-        const updatedCart = await addProductToCart(userID, productToAdd.productID, productToAdd.count);
+        const updatedCart = await removeProductFromCart(userID, productToRemove.productID, productToRemove.count);
         if (typeof updatedCart == 'string') {
             // string (handled error message)
             res.status(400);
@@ -44,7 +44,7 @@ export default async function addToCart(req, res) {
         }
         res.status(200);
         res.json({
-            msg: 'Product added.',
+            msg: 'Product removed.',
             payload: updatedCart
         });
         res.end();
@@ -58,4 +58,4 @@ export default async function addToCart(req, res) {
         res.end();
     }
 }
-//# sourceMappingURL=addToCart.js.map
+//# sourceMappingURL=removeFromCart.js.map

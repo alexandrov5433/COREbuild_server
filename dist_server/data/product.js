@@ -121,4 +121,108 @@ export async function findProductById(productID) {
         client.release();
     }
 }
+export async function checkProductAvailability(items) {
+    const client = await pool.connect();
+    try {
+        const checks = [];
+        Object.entries(items).forEach(([productID, count]) => {
+            checks.push(client.query(`
+                    SELECT "stockCount" FROM "product" WHERE "productID"=$1 AND "stockCount">=$2;
+                `, [productID, count]));
+        });
+        const results = await Promise.all(checks);
+        let allProductsAreAvailable = true;
+        for (let i = 0; i < results.length; i++) {
+            const val = results[i].rows[0].stockCount || null;
+            if (!val) {
+                allProductsAreAvailable = false;
+                break;
+            }
+        }
+        return allProductsAreAvailable;
+    }
+    catch (e) {
+        console.error(e.message);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function reduceProductAvailability(items) {
+    const client = await pool.connect();
+    try {
+        const itemEntries = Object.entries(items);
+        const updates = [];
+        itemEntries.forEach(([productID, count]) => {
+            updates.push(client.query(`
+                    UPDATE "product" SET "stockCount"="stockCount"-$2
+                    WHERE "productID"=$1 AND "stockCount">=$2
+                    RETURNING *;
+                `, [productID, count]));
+        });
+        const results = await Promise.all(updates);
+        let allProductsWereSuccessfullyReduced = true;
+        const reducedProducts = {};
+        for (let i = 0; i < results.length; i++) {
+            const val = results[i].rows[0].stockCount || null;
+            if (Number.isInteger(val)) {
+                const [reducedId, reducedCount] = itemEntries[i];
+                reducedProducts[reducedId] = reducedCount;
+            }
+            else {
+                allProductsWereSuccessfullyReduced = false;
+            }
+        }
+        return {
+            allProductsWereSuccessfullyReduced,
+            reducedProducts
+        };
+    }
+    catch (e) {
+        console.error(e.message);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function increaseProductAvailability(items) {
+    const client = await pool.connect();
+    try {
+        const itemEntries = Object.entries(items);
+        const updates = [];
+        itemEntries.forEach(([productID, count]) => {
+            updates.push(client.query(`
+                    UPDATE "product" SET "stockCount"="stockCount"+$2
+                    WHERE "productID"=$1
+                    RETURNING *;
+                `, [productID, count]));
+        });
+        const results = await Promise.all(updates);
+        let allProductsWereSuccessfullyIncreased = true;
+        const increasedProducts = {};
+        for (let i = 0; i < results.length; i++) {
+            const val = results[i].rows[0].stockCount || null;
+            if (Number.isInteger(val)) {
+                const [increasedId, increasedCount] = itemEntries[i];
+                increasedProducts[increasedId] = increasedCount;
+            }
+            else {
+                allProductsWereSuccessfullyIncreased = false;
+            }
+        }
+        return {
+            allProductsWereSuccessfullyIncreased,
+            increasedProducts
+        };
+    }
+    catch (e) {
+        console.error(e.message);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
 //# sourceMappingURL=product.js.map
