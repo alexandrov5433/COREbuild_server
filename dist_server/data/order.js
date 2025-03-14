@@ -14,14 +14,16 @@ export async function addNewOrder(orderData) {
                 $2,
                 $3,
                 $4,
-                $5
+                $5,
+                $6
             ) RETURNING *;
         `, [
             orderData.payment_status,
             orderData.shipping_status,
             JSON.stringify(orderData.content),
             orderData.recipient,
-            orderData.placement_time
+            orderData.placement_time,
+            orderData.total_price
         ]);
         const newOrder = res.rows[0] || null;
         if (newOrder && newOrder.id) {
@@ -35,7 +37,7 @@ export async function addNewOrder(orderData) {
         return `Something went wrong when processing your order. Please refresh the page or contact us.`;
     }
     catch (e) {
-        console.error(e.message);
+        console.error(e);
         return null;
     }
     finally {
@@ -55,7 +57,7 @@ export async function deleteOrder(orderID) {
         return false;
     }
     catch (e) {
-        console.error(e.message);
+        console.error(e);
         return null;
     }
     finally {
