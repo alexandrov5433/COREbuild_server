@@ -1,3 +1,4 @@
+import { UserData } from "./definitions.js";
 import { pool } from "./postgres.js";
 
 export async function addProductToCart(userID: number, productID: number, count: number) {
@@ -137,6 +138,27 @@ export async function removeProductFromCart(userID: number, productID: number, c
             `, [JSON.stringify(userCart), userID]);
         if (update.rows[0]) {
             return update.rows[0].shopping_cart;
+        }
+        return false;
+    } catch (e) {
+        console.error(e.message);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function emptyUserCart(userID: number) {
+    const client = await pool.connect();
+    try {
+        const update = await client.query(`
+            UPDATE "user"
+            SET "shopping_cart"=$1
+            WHERE ("userID"=$2)
+            RETURNING *
+            `, [JSON.stringify({}), userID]);
+        if (update.rows[0].userID) {
+            return update.rows[0] as UserData;
         }
         return false;
     } catch (e) {

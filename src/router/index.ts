@@ -12,6 +12,7 @@ import addToCart from "../handlers/shoppingCart/addToCart.js";
 import getCart from "../handlers/shoppingCart/getCart.js";
 import removeFromCart from "../handlers/shoppingCart/removeFromCart.js";
 import placeOrder from "../handlers/order/placeOrder.js";
+import collectPayment from "../handlers/order/collectPayment.js";
 
 const router = Router();
 
@@ -36,6 +37,7 @@ router.get('/api/cart/:userID', getCart);
 
 // order
 router.post('/api/order', placeOrder);
+router.get('/api/collect-payment/:paypalOrderID', collectPayment);
 
 router.all('*', (req: Request, res: Response) => {
     res.redirect('/index.html');

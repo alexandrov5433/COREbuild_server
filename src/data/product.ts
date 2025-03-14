@@ -126,8 +126,9 @@ export async function findProductById(productID: number): Promise<ProductData | 
 export async function checkProductAvailability(items: ShoppingCartData) {
     const client = await pool.connect();
     try {
+        const itemEntries = Object.entries(items);
         const checks = [];
-        Object.entries(items).forEach(([productID, count]) => {
+        itemEntries.forEach(([productID, count]) => {
             checks.push(
                 client.query(`
                     SELECT "stockCount" FROM "product" WHERE "productID"=$1 AND "stockCount">=$2;
@@ -136,14 +137,23 @@ export async function checkProductAvailability(items: ShoppingCartData) {
         });
         const results = await Promise.all(checks);
         let allProductsAreAvailable = true;
+        const availableProducts = {};
+        const unavailableProducts = {};
         for (let i = 0; i < results.length; i++) {
             const val = (results[i] as QueryResult).rows[0].stockCount || null;
+            const [id, count] = itemEntries[i];
             if (Number.isInteger(val)) {
+                availableProducts[id] = count;
+            } else {
                 allProductsAreAvailable = false;
-                break;
+                unavailableProducts[id] = count;
             }
         }
-        return allProductsAreAvailable;
+        return {
+            allProductsAreAvailable,
+            availableProducts,
+            unavailableProducts
+        };
     } catch (e) {
         console.error(e.message);
         return null;
@@ -219,6 +229,45 @@ export async function increaseProductAvailability(items: ShoppingCartData) {
         return {
             allProductsWereSuccessfullyIncreased,
             increasedProducts
+        };
+    } catch (e) {
+        console.error(e.message);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function getTotalPriceForProducts(items: ShoppingCartData) {
+    const client = await pool.connect();
+    try {
+        const itemEntries = Object.entries(items);
+        const priceQueries = [];
+        itemEntries.forEach(([productID, _]) => {
+            priceQueries.push(
+                client.query(`
+                    SELECT "price" FROM "product" WHERE "productID"=$1;
+                `, [productID])
+            );
+        });
+        const prices = await Promise.all(priceQueries);
+        let total_price = 0;
+        let allPricesSummed = true;
+        const missingProducts: ShoppingCartData = {};
+        for (let i = 0; i < prices.length; i++) {
+            const val = (prices[i] as QueryResult).rows[0].price || null;
+            const [id, count] = itemEntries[i];
+            if (Number.isInteger(val)) {
+                total_price += val * count;
+            } else {
+                missingProducts[id] = count;
+                allPricesSummed = false;
+            }
+        }
+        return {
+            total_price,
+            allPricesSummed,
+            missingProducts
         };
     } catch (e) {
         console.error(e.message);

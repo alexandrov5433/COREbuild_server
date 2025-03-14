@@ -9,7 +9,8 @@ export type UserData = {
     prefered_payment_method: 'paypal' | 'bank' | null,
     address: string | null,
     favorite_products: Array<number>,
-    past_purchases: Array<number>
+    past_purchases: Array<number>,
+    shopping_cart: ShoppingCartData
 }
 
 export type ProductData = {
@@ -94,7 +95,9 @@ export type OrderData = {
     shipping_status: 'pending' | 'sent',
     content: ShoppingCartData,
     recipient: UserData['userID'],
-    placement_time: number
+    placement_time: number,
+    total_price: number,
+    paypal_order_id: string
 }
 
 export type ShoppingCartData = {

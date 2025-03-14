@@ -57,7 +57,11 @@ CREATE TABLE "order" (
     "shipping_status" shipping_status_options NOT NULL,
     "content" JSONB NOT NULL,
     "recipient" int NOT NULL REFERENCES "user" ("userID"),
-    "placement_time" bigint NOT NULL
+    "placement_time" bigint NOT NULL,
+    "total_price" int NOT NULL,
+    "paypal_order_id" text NOT NULL
 )
+ALTER TABLE "order" ADD COLUMN "total_price" int NOT NULL;
+ALTER TABLE "order" ADD COLUMN "paypal_order_id" text NOT NULL;
 
 DROP TABLE IF EXISTS "user", "product", "review", "file", "category" CASCADE;

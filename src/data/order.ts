@@ -5,10 +5,6 @@ import { pool } from "./postgres.js";
 export async function addNewOrder(orderData: OrderData) {
     const client = await pool.connect();
     try {
-        const allProductsAreAvailable = await checkProductAvailability(orderData.content);
-        if (!allProductsAreAvailable) {
-            return `One or more products are not available any more in the quantity you selected.`;
-        }
         const res = await client.query(`
             INSERT INTO "order" VALUES (
                 DEFAULT,
@@ -16,18 +12,22 @@ export async function addNewOrder(orderData: OrderData) {
                 $2,
                 $3,
                 $4,
-                $5
+                $5,
+                $6,
+                $7
             ) RETURNING *;
         `, [
             orderData.payment_status,
             orderData.shipping_status,
             JSON.stringify(orderData.content),
             orderData.recipient,
-            orderData.placement_time
+            orderData.placement_time,
+            orderData.total_price,
+            orderData.paypal_order_id
         ]);
         const newOrder = res.rows[0] || null;
         if (newOrder && newOrder.id) {
-            const {allProductsWereSuccessfullyReduced, reducedProducts} = await reduceProductAvailability(newOrder.content);
+            const { allProductsWereSuccessfullyReduced, reducedProducts } = await reduceProductAvailability(newOrder.content);
             if (allProductsWereSuccessfullyReduced) {
                 return newOrder;
             }
@@ -35,6 +35,25 @@ export async function addNewOrder(orderData: OrderData) {
             await deleteOrder(newOrder.id);
         }
         return `Something went wrong when processing your order. Please refresh the page or contact us.`;
+    } catch (e) {
+        console.error(e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function setOrderPaymentStatusToPaid(paypal_order_id: string) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE "order" SET "payment_status"='paid' WHERE "paypal_order_id"=$1 RETURNING *;
+        `, [paypal_order_id]);
+        const updatedOrder = res.rows[0] || null;
+        if (updatedOrder && updatedOrder.id) {
+            return true;
+        }
+        return `The payment status of order ID: ${paypal_order_id} could not be modified.`;
     } catch (e) {
         console.error(e);
         return null;
