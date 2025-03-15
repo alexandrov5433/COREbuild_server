@@ -112,7 +112,23 @@ export async function findProductById(productID: number): Promise<ProductData | 
     const client = await pool.connect();
     try {
         const res = await client.query(`
-            SELECT * FROM product WHERE product."productID"=$1;
+            SELECT
+                p."productID",
+                p."name",
+                p."description",
+                c."name" AS category,
+                p."price",
+                p."stockCount",
+                p."manufacturer",
+                p."specsDocID",
+                p."thumbnailID",
+                p."pictures",
+                p."reviews"
+            FROM
+                product p
+            JOIN
+                category c ON p."categoryID" = c."categoryID"
+            WHERE p."productID"=$1;
             `, [productID]);
         return res.rows[0] || null;
     } catch (e) {
