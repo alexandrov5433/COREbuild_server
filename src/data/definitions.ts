@@ -9,7 +9,6 @@ export type UserData = {
     prefered_payment_method: 'paypal' | 'bank' | null,
     address: string | null,
     favorite_products: Array<number>,
-    past_purchases: Array<number>,
     shopping_cart: ShoppingCartData
 }
 
@@ -23,8 +22,7 @@ export type ProductData = {
     manufacturer: string,
     specsDocID: number,
     thumbnailID: number,
-    pictures: Array<number>,
-    reviews: Array<number>
+    pictures: Array<number>
 }
 
 export type ProductCreationData = {
@@ -41,11 +39,13 @@ export type ProductCreationData = {
 }
 
 export type ReviewData = {
-    reviewID: number,
+    reviewID?: number,
     rating: number,
     comment: string,
     reviewerID: number,
-    time: bigint
+    time: number,
+    isVerifiedPurchase: boolean,
+    productID: number
 }
 
 export type FileData = {

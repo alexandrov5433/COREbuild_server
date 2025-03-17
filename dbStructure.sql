@@ -9,12 +9,11 @@
     "prefered_payment_method" varchar(200) DEFAULT NULL,
     "address" varchar(200) DEFAULT NULL,
     "favorite_products" int[] DEFAULT array[]::int[],
-    "past_purchases" int[] DEFAULT array[]::int[],
     "shopping_cart" JSONB DEFAULT '{}'
 );
-
 ALTER TABLE "user" ADD COLUMN "shopping_cart" JSONB DEFAULT NULL;
 ALTER TABLE "user" ALTER COLUMN "shopping_cart" SET DEFAULT '{}';
+ALTER TABLE "user" DROP COLUMN "past_purchases";
 
 CREATE TABLE "product" (
     "productID" SERIAL PRIMARY KEY,
@@ -26,17 +25,21 @@ CREATE TABLE "product" (
     "manufacturer" varchar(200) NOT NULL,
     "specsDocID" int DEFAULT NULL,
     "thumbnailID" int NOT NULL REFERENCES "file" ("fileID"),
-    "pictures" int[] DEFAULT array[]::int[],
-    "reviews" int[] DEFAULT array[]::int[]
+    "pictures" int[] DEFAULT array[]::int[]
 );
+ALTER TABLE "procuct" DROP COLUMN "reviews";
 
 CREATE TABLE "review" (
     "reviewID" SERIAL PRIMARY KEY,
+    "productID" int NOT NULL REFERENCES "product" ("productID"),
     "rating" int NOT NULL,
     "comment" varchar(1000) NOT NULL,
     "reviewerID" int NOT NULL REFERENCES "user" ("userID"),
-    "time" bigint NOT NULL
+    "time" bigint NOT NULL,
+    "isVerifiedPurchase" boolean NOT NULL
 );
+ALTER TABLE "review" ADD COLUMN "isVerifiedPurchase" boolean NOT NULL;
+ALTER TABLE "review" ADD COLUMN "productID" int NOT NULL REFERENCES "product" ("productID");
 
 CREATE TABLE "file" (
     "fileID" SERIAL PRIMARY KEY,

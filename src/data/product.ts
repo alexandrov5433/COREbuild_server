@@ -20,7 +20,7 @@ export async function createProduct(productData: ProductCreationData) {
                 ${specsDocIDVal},
                 ${productData.thumbnailID},
                 ${picturesVal},
-                DEFAULT)
+                )
             RETURNING *
             `)
     } catch (e) {
@@ -48,8 +48,7 @@ export async function searchProducts(queryParams: ProductsCatalogQueryParams) {
                 p."manufacturer",
                 p."specsDocID",
                 p."thumbnailID",
-                p."pictures",
-                p."reviews"
+                p."pictures"
             FROM
                 product p
             JOIN
@@ -122,8 +121,7 @@ export async function findProductById(productID: number): Promise<ProductData | 
                 p."manufacturer",
                 p."specsDocID",
                 p."thumbnailID",
-                p."pictures",
-                p."reviews"
+                p."pictures"
             FROM
                 product p
             JOIN
