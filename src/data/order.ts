@@ -80,3 +80,23 @@ export async function deleteOrder(orderID: number) {
         client.release();
     }
 }
+
+export async function hasCustomerBoughtProduct(userID: number, productID: number) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT "content" -> '$2' product_ID
+            FROM "order"
+            WHERE "recipient"=$1;
+        `, [userID, productID]);
+        if (res.rows[0].product_ID) {
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.error(e);
+        return null;
+    } finally {
+        client.release();
+    }
+}

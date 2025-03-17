@@ -13,6 +13,10 @@ import getCart from "../handlers/shoppingCart/getCart.js";
 import removeFromCart from "../handlers/shoppingCart/removeFromCart.js";
 import placeOrder from "../handlers/order/placeOrder.js";
 import collectPayment from "../handlers/order/collectPayment.js";
+import addNewReview from "../handlers/review/addNewReview.js";
+import getRatingAndReviewCount from "../handlers/review/getRatingAndReviewCount.js";
+import getReviews from "../handlers/review/getReviews.js";
+import getCustomerReviewedProduct from "../handlers/review/getCustomerReviewedProduct.js";
 
 const router = Router();
 
@@ -38,6 +42,12 @@ router.get('/api/cart/:userID', getCart);
 // order
 router.post('/api/order', placeOrder);
 router.get('/api/collect-payment/:paypalOrderID', collectPayment);
+
+// review
+router.post('/api/review', addNewReview);
+router.get('/api/rating-and-review-count/:productID', getRatingAndReviewCount);
+router.get('/api/product-reviews', getReviews);
+router.get('/api/customer-reviewed-product/:productID', getCustomerReviewedProduct);
 
 router.all('*', (req: Request, res: Response) => {
     res.redirect('/index.html');
