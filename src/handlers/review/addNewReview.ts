@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { hasCustomerBoughtProduct } from "../../data/order.js";
 import { addReview, hasCustomerReviewedProduct } from "../../data/review.js";
+import logger from "../../config/winston.js";
 
 export default async function addNewReview(req: Request, res: Response) {
     try {
@@ -33,13 +34,15 @@ export default async function addNewReview(req: Request, res: Response) {
         if (customerHasReviewedProduct) {
             res.status(400);
             res.json({
-                msg: 'You have already revied this product.'
+                msg: 'You have already reviewed this product.'
             });
             res.end();
             return;
         }
         const purchaseVerified = await hasCustomerBoughtProduct(reviewData.reviewerID, reviewData.productID);
-        reviewData.isVerifiedPurchase = purchaseVerified;
+        logger.debug('purchaseVerified', purchaseVerified);
+        
+        reviewData.isVerifiedPurchase = Boolean(purchaseVerified);
         const newReview = await addReview(reviewData);
         if (!newReview) {
             res.status(400);
@@ -55,7 +58,6 @@ export default async function addNewReview(req: Request, res: Response) {
             payload: newReview
         });
         res.end();
-
     } catch (e) {
         console.log('ERROR:', e.message);
         res.status(500);
