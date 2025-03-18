@@ -19,6 +19,7 @@ import addNewReview from "../handlers/review/addNewReview.js";
 import getRatingAndReviewCount from "../handlers/review/getRatingAndReviewCount.js";
 import getReviews from "../handlers/review/getReviews.js";
 import getCustomerReviewedProduct from "../handlers/review/getCustomerReviewedProduct.js";
+import cancelPayment from "../handlers/order/cancelPayment.js";
 
 const router = Router();
 
@@ -44,6 +45,7 @@ router.get('/api/cart/:userID', Guard.allowCustomer, getCart);
 // order
 router.post('/api/order', Guard.allowCustomer, placeOrder);
 router.get('/api/collect-payment/:paypalOrderID', Guard.allowCustomer, collectPayment);
+router.get('/api/cancel-payment/:paypalOrderID', Guard.allowCustomer, cancelPayment);
 
 // review
 router.post('/api/review', Guard.allowCustomer, addNewReview);

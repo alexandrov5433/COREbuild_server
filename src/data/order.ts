@@ -100,3 +100,21 @@ export async function hasCustomerBoughtProduct(userID: number, productID: number
         client.release();
     }
 }
+
+export async function getOrderByID(paypal_order_id: string) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT * FROM "order" WHERE "paypal_order_id"=$1;
+        `, [paypal_order_id]);
+        if (res.rows[0].id) {
+            return res.rows[0];
+        }
+        return false;
+    } catch (e) {
+        console.error(e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
