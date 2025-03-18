@@ -3,7 +3,8 @@ import jwt from 'jsonwebtoken';
 const JWT_KEY:string = process.env.JWT_KEY || '';
 
 export type JwtPayload = {
-    userID: string
+    userID: string,
+    is_employee: boolean
 };
 
 export async function createJWT(payload: JwtPayload): Promise<string | Error> {

@@ -79,7 +79,7 @@ export default async function register(req: Request, res: Response) {
                 return;
             }
         }
-        const jwt = await createJWT({ userID: dbResponse?.rows[0].userID });
+        const jwt = await createJWT({ userID: dbResponse?.rows[0].userID, is_employee: dbResponse?.rows[0].is_employee });
         // 1 Year = 31,556,952 Seconds
         const cookieMaxAge = registerData.stayLoggedIn ? ' Max-Age=31556952;' : '';
         console.log('New User Created ID:', dbResponse?.rows[0].userID);
