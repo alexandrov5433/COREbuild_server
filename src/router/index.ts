@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
 
+import Guard from "../util/routeGuard.js";
+
 import login from "../handlers/user/login.js";
 import register from "../handlers/user/register.js";
 import logout from "../handlers/user/logout.js";
@@ -21,13 +23,13 @@ import getCustomerReviewedProduct from "../handlers/review/getCustomerReviewedPr
 const router = Router();
 
 // user
-router.post('/api/login', login);
-router.post('/api/register', register);
-router.get('/api/logout', logout);
-router.get('/api/validate-cookie', validateCookie);
+router.post('/api/login', Guard.allowGuest, login);
+router.post('/api/register', Guard.allowGuest, register);
+router.get('/api/logout', Guard.allowUser, logout);
+router.get('/api/validate-cookie', Guard.allowGuest, validateCookie);
 
 // product
-router.post('/api/add-product', addProduct);
+router.post('/api/add-product', Guard.allowEmployee, addProduct);
 router.get('/api/product-details/:productID', productDetails);
 router.get('/api/products-catalog', productsCatalog);
 
@@ -35,16 +37,16 @@ router.get('/api/products-catalog', productsCatalog);
 router.get('/api/file/:picOrDoc/:fileid', file);
 
 // shopping cart
-router.post('/api/cart/add', addToCart);
-router.post('/api/cart/remove', removeFromCart);
-router.get('/api/cart/:userID', getCart);
+router.post('/api/cart/add', Guard.allowCustomer, addToCart);
+router.post('/api/cart/remove', Guard.allowCustomer, removeFromCart);
+router.get('/api/cart/:userID', Guard.allowCustomer, getCart);
 
 // order
-router.post('/api/order', placeOrder);
-router.get('/api/collect-payment/:paypalOrderID', collectPayment);
+router.post('/api/order', Guard.allowCustomer, placeOrder);
+router.get('/api/collect-payment/:paypalOrderID', Guard.allowCustomer, collectPayment);
 
 // review
-router.post('/api/review', addNewReview);
+router.post('/api/review', Guard.allowCustomer, addNewReview);
 router.get('/api/rating-and-review-count/:productID', getRatingAndReviewCount);
 router.get('/api/product-reviews', getReviews);
 router.get('/api/customer-reviewed-product/:productID', getCustomerReviewedProduct);
