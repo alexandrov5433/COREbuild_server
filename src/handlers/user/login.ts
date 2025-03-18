@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createJWT } from "../../util/jwt.js";
 import { findUserByUsername } from "../../data/user.js";
 import bcrypt from "bcryptjs";
+import logger from "../../config/winston.js";
 
 export default async function login(req: Request, res: Response) {
     try {
@@ -39,6 +40,7 @@ export default async function login(req: Request, res: Response) {
                 }
             });
             res.end();
+            logger.info(`User ${dbResponse?.rows[0].username} with ID: ${dbResponse?.rows[0].userID} logged in successfully.`);
         } else {
             res.status(400);
             res.json({
