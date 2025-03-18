@@ -4,3 +4,5 @@ fileStorage/docs/*
 fileStorage/pics/*
 mock
 mock/*
+logs
+logs/*
