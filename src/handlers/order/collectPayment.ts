@@ -46,7 +46,6 @@ export default async function collectPayment(req: Request, res: Response) {
             }
             // Get more response info...
             // const { statusCode, headers } = httpResponse;
-            console.log('::::::collectPayment paypal_order_id::::::', paypal_order_id);
             const userData = await emptyUserCart(userID);
             if (!userData) {
                 res.status(400);
@@ -67,7 +66,6 @@ export default async function collectPayment(req: Request, res: Response) {
             res.end();
         } catch (error) {
             if (error instanceof ApiError) {
-                // const { statusCode, headers } = error;
                 throw new Error(error.message);
             }
         }

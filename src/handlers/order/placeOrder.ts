@@ -125,8 +125,6 @@ export default async function placeOrder(req: Request, res: Response) {
                 res.end();
                 return;
             }
-            console.log('::::placeOrder paypal_order_id::::', paypal_order_id);
-            
             res.status(200);
             res.json({
                 msg: 'Order placed.',
