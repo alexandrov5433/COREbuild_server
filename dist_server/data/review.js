@@ -60,8 +60,17 @@ export async function getReviewsForProduct(productID, currentPage) {
         }
         const reviewsPerPage = 5;
         const res = await client.query(`
-            SELECT * FROM "review"
-            WHERE "productID"=$1;
+            SELECT
+                r."reviewID",
+                r."productID",
+                r."rating",
+                r."comment",
+                u."username" AS "username",
+                r."time",
+                r."isVerifiedPurchase"
+            FROM "review" r
+            JOIN "user" u ON r."reviewerID" = u."userID"
+            WHERE r."productID"=$1;
             `, [productID]);
         let payload = res.rows || [];
         const pagesCount = Math.ceil(payload.length / reviewsPerPage);

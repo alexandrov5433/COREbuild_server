@@ -39,7 +39,7 @@ export default async function addNewReview(req, res) {
         }
         const purchaseVerified = await hasCustomerBoughtProduct(reviewData.reviewerID, reviewData.productID);
         logger.debug('purchaseVerified', purchaseVerified);
-        reviewData.isVerifiedPurchase = purchaseVerified;
+        reviewData.isVerifiedPurchase = Boolean(purchaseVerified);
         const newReview = await addReview(reviewData);
         if (!newReview) {
             res.status(400);

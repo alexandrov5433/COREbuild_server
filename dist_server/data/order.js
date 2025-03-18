@@ -90,7 +90,7 @@ export async function hasCustomerBoughtProduct(userID, productID) {
             FROM "order"
             WHERE "recipient"=$1;
         `, [userID, productID]);
-        if (res.rows[0].product_id) {
+        if (res?.rows[0]?.product_id) {
             return true;
         }
         return false;
