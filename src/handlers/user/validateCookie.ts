@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { JwtPayload } from '../../util/jwt.js';
 import { findUserByUserID } from '../../data/user.js';
+import logger from '../../config/winston.js';
 
 export default async function validateCookie(req: Request, res: Response) {
     try {

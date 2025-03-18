@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { validateJWT } from "./jwt.js";
+import logger from "../config/winston.js";
 
 async function checkCookie(req: Request, res: Response, next: NextFunction) {
     if (req.cookies.session) {
