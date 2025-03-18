@@ -33,13 +33,14 @@ CREATE TABLE "review" (
     "reviewID" SERIAL PRIMARY KEY,
     "productID" int NOT NULL REFERENCES "product" ("productID"),
     "rating" int NOT NULL,
-    "comment" varchar(1000) NOT NULL,
+    "comment" text NOT NULL,
     "reviewerID" int NOT NULL REFERENCES "user" ("userID"),
     "time" bigint NOT NULL,
     "isVerifiedPurchase" boolean NOT NULL
 );
 ALTER TABLE "review" ADD COLUMN "isVerifiedPurchase" boolean NOT NULL;
 ALTER TABLE "review" ADD COLUMN "productID" int NOT NULL REFERENCES "product" ("productID");
+ALTER TABLE "review" ALTER COLUMN "comment" TYPE text NOT NULL;
 
 CREATE TABLE "file" (
     "fileID" SERIAL PRIMARY KEY,
