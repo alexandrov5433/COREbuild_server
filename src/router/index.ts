@@ -26,7 +26,7 @@ const router = Router();
 router.post('/api/login', Guard.allowGuest, login);
 router.post('/api/register', Guard.allowGuest, register);
 router.get('/api/logout', Guard.allowUser, logout);
-router.get('/api/validate-cookie', Guard.allowGuest, validateCookie);
+router.get('/api/validate-cookie', validateCookie);
 
 // product
 router.post('/api/add-product', Guard.allowEmployee, addProduct);
