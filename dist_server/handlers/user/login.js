@@ -1,6 +1,7 @@
 import { createJWT } from "../../util/jwt.js";
 import { findUserByUsername } from "../../data/user.js";
 import bcrypt from "bcryptjs";
+import logger from "../../config/winston.js";
 export default async function login(req, res) {
     try {
         const bodyData = {
@@ -37,6 +38,7 @@ export default async function login(req, res) {
                 }
             });
             res.end();
+            logger.info(`User ${dbResponse?.rows[0].username} with ID: ${dbResponse?.rows[0].userID} logged in successfully.`);
         }
         else {
             res.status(400);

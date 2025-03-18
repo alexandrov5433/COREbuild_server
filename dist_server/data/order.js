@@ -86,12 +86,31 @@ export async function hasCustomerBoughtProduct(userID, productID) {
     const client = await pool.connect();
     try {
         const res = await client.query(`
-            SELECT "content" -> '$2' product_ID
+            SELECT "content" -> $2 product_id
             FROM "order"
             WHERE "recipient"=$1;
         `, [userID, productID]);
-        if (res.rows[0].product_ID) {
+        if (res.rows[0].product_id) {
             return true;
+        }
+        return false;
+    }
+    catch (e) {
+        console.error(e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function getOrderByID(paypal_order_id) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT * FROM "order" WHERE "paypal_order_id"=$1;
+        `, [paypal_order_id]);
+        if (res.rows[0].id) {
+            return res.rows[0];
         }
         return false;
     }

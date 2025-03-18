@@ -17,12 +17,13 @@ import addNewReview from "../handlers/review/addNewReview.js";
 import getRatingAndReviewCount from "../handlers/review/getRatingAndReviewCount.js";
 import getReviews from "../handlers/review/getReviews.js";
 import getCustomerReviewedProduct from "../handlers/review/getCustomerReviewedProduct.js";
+import cancelPayment from "../handlers/order/cancelPayment.js";
 const router = Router();
 // user
 router.post('/api/login', Guard.allowGuest, login);
 router.post('/api/register', Guard.allowGuest, register);
 router.get('/api/logout', Guard.allowUser, logout);
-router.get('/api/validate-cookie', Guard.allowGuest, validateCookie);
+router.get('/api/validate-cookie', validateCookie);
 // product
 router.post('/api/add-product', Guard.allowEmployee, addProduct);
 router.get('/api/product-details/:productID', productDetails);
@@ -36,6 +37,7 @@ router.get('/api/cart/:userID', Guard.allowCustomer, getCart);
 // order
 router.post('/api/order', Guard.allowCustomer, placeOrder);
 router.get('/api/collect-payment/:paypalOrderID', Guard.allowCustomer, collectPayment);
+router.get('/api/cancel-payment/:paypalOrderID', Guard.allowCustomer, cancelPayment);
 // review
 router.post('/api/review', Guard.allowCustomer, addNewReview);
 router.get('/api/rating-and-review-count/:productID', getRatingAndReviewCount);

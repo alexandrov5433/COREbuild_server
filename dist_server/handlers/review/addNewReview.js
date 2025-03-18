@@ -1,5 +1,6 @@
 import { hasCustomerBoughtProduct } from "../../data/order.js";
 import { addReview, hasCustomerReviewedProduct } from "../../data/review.js";
+import logger from "../../config/winston.js";
 export default async function addNewReview(req, res) {
     try {
         const userID = Number(req.cookies.userSession.userID);
@@ -31,12 +32,13 @@ export default async function addNewReview(req, res) {
         if (customerHasReviewedProduct) {
             res.status(400);
             res.json({
-                msg: 'You have already revied this product.'
+                msg: 'You have already reviewed this product.'
             });
             res.end();
             return;
         }
         const purchaseVerified = await hasCustomerBoughtProduct(reviewData.reviewerID, reviewData.productID);
+        logger.debug('purchaseVerified', purchaseVerified);
         reviewData.isVerifiedPurchase = purchaseVerified;
         const newReview = await addReview(reviewData);
         if (!newReview) {

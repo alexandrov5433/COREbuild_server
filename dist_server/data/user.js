@@ -67,9 +67,7 @@ export async function addNewCustomer(registerData) {
                 '${registerData.email}',
                 '${registerData.firstname}',
                 '${registerData.lastname}',
-                '${registerData.prefered_payment_method}',
                 '${registerData.address}',
-                DEFAULT,
                 DEFAULT,
                 DEFAULT)
             RETURNING *
@@ -92,7 +90,6 @@ export async function addNewEmployee(registerData) {
                 ${true},
                 '${registerData.username}',
                 '${registerData.password}',
-                DEFAULT,
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
