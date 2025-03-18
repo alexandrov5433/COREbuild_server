@@ -42,6 +42,7 @@ export type ReviewData = {
     rating: number,
     comment: string,
     reviewerID: number,
+    username?: string,
     time: number,
     isVerifiedPurchase: boolean,
     productID: number
