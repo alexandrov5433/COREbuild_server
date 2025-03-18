@@ -85,11 +85,11 @@ export async function hasCustomerBoughtProduct(userID: number, productID: number
     const client = await pool.connect();
     try {
         const res = await client.query(`
-            SELECT "content" -> '$2' product_ID
+            SELECT "content" -> $2 product_id
             FROM "order"
             WHERE "recipient"=$1;
         `, [userID, productID]);
-        if (res.rows[0].product_ID) {
+        if (res.rows[0].product_id) {
             return true;
         }
         return false;
