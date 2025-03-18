@@ -10,6 +10,9 @@ export default async function validateCookie(req, res) {
             if (dbResponse?.rows[0].userID != sessionCookie.userID) {
                 throw new Error('Invalid cookie.');
             }
+            if (dbResponse?.rows[0].is_employee != sessionCookie.is_employee) {
+                throw new Error('Invalid cookie.');
+            }
             res.status(200);
             res.json({
                 msg: `Session is valid.`,

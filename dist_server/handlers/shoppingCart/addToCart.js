@@ -2,7 +2,6 @@ import { addProductToCart } from "../../data/cart.js";
 export default async function addToCart(req, res) {
     try {
         const userID = req.cookies.userSession.userID;
-        console.log(req.body);
         if (!userID) {
             res.status(401);
             res.json({

@@ -1,12 +1,8 @@
-import { checkProductAvailability, increaseProductAvailability, reduceProductAvailability } from "./product.js";
+import { increaseProductAvailability, reduceProductAvailability } from "./product.js";
 import { pool } from "./postgres.js";
 export async function addNewOrder(orderData) {
     const client = await pool.connect();
     try {
-        const allProductsAreAvailable = await checkProductAvailability(orderData.content);
-        if (!allProductsAreAvailable) {
-            return `One or more products are not available any more in the quantity you selected.`;
-        }
         const res = await client.query(`
             INSERT INTO "order" VALUES (
                 DEFAULT,
@@ -15,7 +11,8 @@ export async function addNewOrder(orderData) {
                 $3,
                 $4,
                 $5,
-                $6
+                $6,
+                $7
             ) RETURNING *;
         `, [
             orderData.payment_status,
@@ -23,7 +20,8 @@ export async function addNewOrder(orderData) {
             JSON.stringify(orderData.content),
             orderData.recipient,
             orderData.placement_time,
-            orderData.total_price
+            orderData.total_price,
+            orderData.paypal_order_id
         ]);
         const newOrder = res.rows[0] || null;
         if (newOrder && newOrder.id) {
@@ -44,6 +42,26 @@ export async function addNewOrder(orderData) {
         client.release();
     }
 }
+export async function setOrderPaymentStatusToPaid(paypal_order_id) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE "order" SET "payment_status"='paid' WHERE "paypal_order_id"=$1 RETURNING *;
+        `, [paypal_order_id]);
+        const updatedOrder = res.rows[0] || null;
+        if (updatedOrder && updatedOrder.id) {
+            return true;
+        }
+        return `The payment status of order ID: ${paypal_order_id} could not be modified.`;
+    }
+    catch (e) {
+        console.error(e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
 export async function deleteOrder(orderID) {
     const client = await pool.connect();
     try {
@@ -52,6 +70,27 @@ export async function deleteOrder(orderID) {
             RETURNING *;
         `, [orderID]);
         if (res.rows[0].id) {
+            return true;
+        }
+        return false;
+    }
+    catch (e) {
+        console.error(e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function hasCustomerBoughtProduct(userID, productID) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT "content" -> '$2' product_ID
+            FROM "order"
+            WHERE "recipient"=$1;
+        `, [userID, productID]);
+        if (res.rows[0].product_ID) {
             return true;
         }
         return false;

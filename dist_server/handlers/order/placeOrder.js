@@ -1,5 +1,8 @@
 import { addNewOrder } from "../../data/order.js";
-import { getTotalPriceForProducts } from "../../data/product.js";
+import { checkProductAvailability, getTotalPriceForProducts } from "../../data/product.js";
+import { ApiError } from '@paypal/paypal-server-sdk';
+import { convertCentToWhole } from "../../util/currency.js";
+import { ordersController } from "../../config/paypal.js";
 export default async function placeOrder(req, res) {
     try {
         const userID = Number(req.cookies.userSession.userID);
@@ -17,10 +20,30 @@ export default async function placeOrder(req, res) {
             content: JSON.parse(req.body.order || {}),
             recipient: userID,
             placement_time: new Date().getTime(),
-            total_price: 0
+            total_price: 0,
+            paypal_order_id: ''
         };
-        const result = await getTotalPriceForProducts(orderData.content);
-        if (!result) {
+        const checkResult = await checkProductAvailability(orderData.content);
+        if (!checkResult) {
+            // null was returned       
+            res.status(400);
+            res.json({
+                msg: `And error occured while processing your request. Please try again later or contact us.`,
+            });
+            res.end();
+            return;
+        }
+        const { allProductsAreAvailable, unavailableProducts } = checkResult;
+        if (!allProductsAreAvailable) {
+            res.status(400);
+            res.json({
+                msg: `The products with IDs: ${Object.keys(unavailableProducts).join(', ')} are unavailbale. Please empty your cart and try again.`,
+            });
+            res.end();
+            return;
+        }
+        const totalPriceResult = await getTotalPriceForProducts(orderData.content);
+        if (!totalPriceResult) {
             // null was returned       
             res.status(400);
             res.json({
@@ -29,7 +52,7 @@ export default async function placeOrder(req, res) {
             res.end();
             return;
         }
-        const { total_price: total_price_products, allPricesSummed, missingProducts } = result;
+        const { total_price: total_price_products, allPricesSummed, missingProducts } = totalPriceResult;
         if (allPricesSummed) {
             orderData.total_price = total_price_products;
         }
@@ -42,30 +65,63 @@ export default async function placeOrder(req, res) {
             res.end();
             return;
         }
-        const newOrder = await addNewOrder(orderData);
-        if (typeof newOrder === 'string') {
-            res.status(400);
+        const orderTotalCost = convertCentToWhole(total_price_products).toString();
+        const collect = {
+            body: {
+                intent: "CAPTURE",
+                purchaseUnits: [
+                    {
+                        amount: {
+                            currencyCode: "EUR",
+                            value: orderTotalCost,
+                            breakdown: {
+                                itemTotal: {
+                                    currencyCode: "EUR",
+                                    value: orderTotalCost,
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+            prefer: "return=minimal",
+        };
+        try {
+            const { body } = await ordersController.ordersCreate(collect);
+            const paypal_order_id = JSON.parse(body).id;
+            orderData.paypal_order_id = paypal_order_id;
+            const newOrder = await addNewOrder(orderData);
+            if (typeof newOrder === 'string') {
+                res.status(400);
+                res.json({
+                    msg: newOrder
+                });
+                res.end();
+                return;
+            }
+            if (!newOrder) {
+                // false or null (error)
+                res.status(400);
+                res.json({
+                    msg: 'And error occured while processing your request. Please try again later or contact us.',
+                });
+                res.end();
+                return;
+            }
+            console.log('::::placeOrder paypal_order_id::::', paypal_order_id);
+            res.status(200);
             res.json({
-                msg: newOrder
+                msg: 'Order placed.',
+                payload: paypal_order_id
             });
             res.end();
-            return;
         }
-        if (!newOrder) {
-            // false or null (error)
-            res.status(400);
-            res.json({
-                msg: 'And error occured while processing your request. Please try again later or contact us.',
-            });
-            res.end();
-            return;
+        catch (error) {
+            if (error instanceof ApiError) {
+                // const { statusCode, headers } = error;
+                throw new Error(error.message);
+            }
         }
-        res.status(200);
-        res.json({
-            msg: 'Order placed.',
-            payload: newOrder
-        });
-        res.end();
     }
     catch (e) {
         console.log('ERROR:', e);

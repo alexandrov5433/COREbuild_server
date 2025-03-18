@@ -17,7 +17,7 @@ export async function createProduct(productData) {
                 ${specsDocIDVal},
                 ${productData.thumbnailID},
                 ${picturesVal},
-                DEFAULT)
+                )
             RETURNING *
             `);
     }
@@ -46,8 +46,7 @@ export async function searchProducts(queryParams) {
                 p."manufacturer",
                 p."specsDocID",
                 p."thumbnailID",
-                p."pictures",
-                p."reviews"
+                p."pictures"
             FROM
                 product p
             JOIN
@@ -109,7 +108,22 @@ export async function findProductById(productID) {
     const client = await pool.connect();
     try {
         const res = await client.query(`
-            SELECT * FROM product WHERE product."productID"=$1;
+            SELECT
+                p."productID",
+                p."name",
+                p."description",
+                c."name" AS category,
+                p."price",
+                p."stockCount",
+                p."manufacturer",
+                p."specsDocID",
+                p."thumbnailID",
+                p."pictures"
+            FROM
+                product p
+            JOIN
+                category c ON p."categoryID" = c."categoryID"
+            WHERE p."productID"=$1;
             `, [productID]);
         return res.rows[0] || null;
     }
@@ -124,22 +138,33 @@ export async function findProductById(productID) {
 export async function checkProductAvailability(items) {
     const client = await pool.connect();
     try {
+        const itemEntries = Object.entries(items);
         const checks = [];
-        Object.entries(items).forEach(([productID, count]) => {
+        itemEntries.forEach(([productID, count]) => {
             checks.push(client.query(`
                     SELECT "stockCount" FROM "product" WHERE "productID"=$1 AND "stockCount">=$2;
                 `, [productID, count]));
         });
         const results = await Promise.all(checks);
         let allProductsAreAvailable = true;
+        const availableProducts = {};
+        const unavailableProducts = {};
         for (let i = 0; i < results.length; i++) {
             const val = results[i].rows[0].stockCount || null;
-            if (!Number.isInteger(val)) {
+            const [id, count] = itemEntries[i];
+            if (Number.isInteger(val)) {
+                availableProducts[id] = count;
+            }
+            else {
                 allProductsAreAvailable = false;
-                break;
+                unavailableProducts[id] = count;
             }
         }
-        return allProductsAreAvailable;
+        return {
+            allProductsAreAvailable,
+            availableProducts,
+            unavailableProducts
+        };
     }
     catch (e) {
         console.error(e.message);
@@ -241,12 +266,12 @@ export async function getTotalPriceForProducts(items) {
         const missingProducts = {};
         for (let i = 0; i < prices.length; i++) {
             const val = prices[i].rows[0].price || null;
+            const [id, count] = itemEntries[i];
             if (Number.isInteger(val)) {
-                total_price += val;
+                total_price += val * count;
             }
             else {
-                const [missingId, missingCount] = itemEntries[i];
-                missingProducts[missingId] = missingCount;
+                missingProducts[id] = count;
                 allPricesSummed = false;
             }
         }

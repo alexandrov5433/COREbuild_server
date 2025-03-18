@@ -19,7 +19,7 @@ export default async function login(req, res) {
                 res.end();
                 return;
             }
-            const jwt = await createJWT({ userID: dbResponse?.rows[0].userID });
+            const jwt = await createJWT({ userID: dbResponse?.rows[0].userID, is_employee: dbResponse?.rows[0].is_employee });
             const cookieMaxAge = bodyData.stayLoggedIn ? ' Max-Age=31556952;' : '';
             res.status(200);
             res.setHeader('Set-Cookie', `session=${jwt};${cookieMaxAge} Path=/; HttpOnly; Secure;`);
