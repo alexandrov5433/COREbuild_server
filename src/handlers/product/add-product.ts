@@ -7,6 +7,7 @@ import { createProduct } from "../../data/product.js";
 import { ProductCreationData } from "../../data/definitions.js";
 import { createCategory } from "../../data/category.js";
 import logger from "../../config/winston.js";
+import { reduceSpacesBetweenWordsToOne } from "../../util/string.js";
 
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
@@ -219,8 +220,4 @@ export default async function addProduct(req: Request, res: Response) {
         });
         res.end();
     }
-}
-
-function reduceSpacesBetweenWordsToOne(sentance: string) {
-    return sentance.trim().split(' ').filter(e => e != ' ' && e).join(' ');
 }
