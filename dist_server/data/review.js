@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 export async function addReview(reviewData) {
     const client = await pool.connect();
@@ -25,7 +26,7 @@ export async function addReview(reviewData) {
         return res.rows[0] || null;
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -45,7 +46,7 @@ export async function hasCustomerReviewedProduct(userID, productID) {
         return false;
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -85,7 +86,7 @@ export async function getReviewsForProduct(productID, currentPage) {
         };
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -113,7 +114,7 @@ export async function getRatingAndReviewCountForProduct(productID) {
         };
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {

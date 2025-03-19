@@ -1,4 +1,5 @@
 import { findProductById } from "../../data/product.js";
+import logger from "../../config/winston.js";
 export default async function productDetails(req, res) {
     try {
         const productID = Number(req.params.productID) || null;
@@ -12,7 +13,7 @@ export default async function productDetails(req, res) {
         }
         const productData = await findProductById(productID);
         if (!productData) {
-            res.status(204);
+            res.status(400);
             res.json({
                 msg: `Could not find a product with ID: "${productID}".`
             });
@@ -27,8 +28,7 @@ export default async function productDetails(req, res) {
         res.end();
     }
     catch (e) {
-        console.log(e.message);
-        console.log(e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

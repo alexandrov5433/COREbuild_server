@@ -1,4 +1,5 @@
 import { getCartForUser } from "../../data/cart.js";
+import logger from "../../config/winston.js";
 export default async function getCart(req, res) {
     try {
         const userID = req.params.userID;
@@ -28,7 +29,7 @@ export default async function getCart(req, res) {
         res.end();
     }
     catch (e) {
-        console.log('ERROR:', e.message);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

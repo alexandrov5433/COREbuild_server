@@ -1,5 +1,6 @@
 import url from 'node:url';
 import { searchProducts } from "../../data/product.js";
+import logger from "../../config/winston.js";
 export default async function productsCatalog(req, res) {
     try {
         const allQueryParams = url.parse(req.url, true).query;
@@ -31,8 +32,7 @@ export default async function productsCatalog(req, res) {
         res.end();
     }
     catch (e) {
-        console.log(e.message);
-        console.log(e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

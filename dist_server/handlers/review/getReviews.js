@@ -1,5 +1,6 @@
 import { getReviewsForProduct } from "../../data/review.js";
 import url from 'node:url';
+import logger from "../../config/winston.js";
 export default async function getReviews(req, res) {
     try {
         const queryParams = url.parse(req.url, true).query;
@@ -30,7 +31,7 @@ export default async function getReviews(req, res) {
         res.end();
     }
     catch (e) {
-        console.log('ERROR:', e.message);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

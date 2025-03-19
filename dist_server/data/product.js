@@ -1,5 +1,6 @@
 import { convertCentToWhole } from "../util/currency.js";
 import { pool } from "./postgres.js";
+import logger from "../config/winston.js";
 export async function createProduct(productData) {
     const client = await pool.connect();
     try {
@@ -22,7 +23,7 @@ export async function createProduct(productData) {
             `);
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -97,7 +98,7 @@ export async function searchProducts(queryParams) {
         };
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -128,7 +129,7 @@ export async function findProductById(productID) {
         return res.rows[0] || null;
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -167,7 +168,7 @@ export async function checkProductAvailability(items) {
         };
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -205,7 +206,7 @@ export async function reduceProductAvailability(items) {
         };
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -243,7 +244,7 @@ export async function increaseProductAvailability(items) {
         };
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -282,7 +283,7 @@ export async function getTotalPriceForProducts(items) {
         };
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {

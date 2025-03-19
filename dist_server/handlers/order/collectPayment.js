@@ -2,6 +2,7 @@ import { ordersController } from "../../config/paypal.js";
 import { ApiError } from "@paypal/paypal-server-sdk";
 import { setOrderPaymentStatusToPaid } from "../../data/order.js";
 import { emptyUserCart } from "../../data/cart.js";
+import logger from "../../config/winston.js";
 export default async function collectPayment(req, res) {
     try {
         const paypalOrderID = req.params.paypalOrderID || null;
@@ -67,7 +68,7 @@ export default async function collectPayment(req, res) {
         }
     }
     catch (e) {
-        console.log('ERROR:', e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

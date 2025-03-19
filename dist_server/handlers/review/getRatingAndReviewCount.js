@@ -1,4 +1,5 @@
 import { getRatingAndReviewCountForProduct } from "../../data/review.js";
+import logger from "../../config/winston.js";
 export default async function getRatingAndReviewCount(req, res) {
     try {
         const productID = Number(req.params.productID) || null;
@@ -27,7 +28,7 @@ export default async function getRatingAndReviewCount(req, res) {
         res.end();
     }
     catch (e) {
-        console.log('ERROR:', e.message);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createFile } from "../../data/file.js";
 import { createProduct } from "../../data/product.js";
 import { createCategory } from "../../data/category.js";
+import logger from "../../config/winston.js";
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
 const MAX_PICTURE_COUNT = Number(process.env.MAX_PICTURE_COUNT) || 5;
@@ -203,8 +204,7 @@ export default async function addProduct(req, res) {
             .end();
     }
     catch (e) {
-        console.log(e.message);
-        console.log(e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

@@ -57,7 +57,7 @@ export default async function addNewReview(req, res) {
         res.end();
     }
     catch (e) {
-        console.log('ERROR:', e.message);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

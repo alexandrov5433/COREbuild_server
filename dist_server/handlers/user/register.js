@@ -93,7 +93,7 @@ export default async function register(req, res) {
         logger.info(`New user registered.`, dbResponse?.rows[0]);
     }
     catch (e) {
-        console.log('ERROR:', e.message);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${e.message}`

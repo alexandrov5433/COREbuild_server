@@ -1,4 +1,5 @@
 import { pool } from "./postgres.js";
+import logger from "../config/winston.js";
 export async function findUserByUsername(username) {
     const client = await pool.connect();
     try {
@@ -6,7 +7,7 @@ export async function findUserByUsername(username) {
         return res;
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -20,7 +21,7 @@ export async function checkUsernameTaken(username) {
         return (res.rows[0]?.username === username ? true : false);
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -34,7 +35,7 @@ export async function checkEmailTaken(email) {
         return (res.rows[0]?.email === email ? true : false);
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -48,7 +49,7 @@ export async function findUserByUserID(userID) {
         return res;
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -74,7 +75,7 @@ export async function addNewCustomer(registerData) {
             `);
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -100,7 +101,7 @@ export async function addNewEmployee(registerData) {
             `);
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {

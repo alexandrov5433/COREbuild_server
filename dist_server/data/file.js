@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 export async function createFile(fileName) {
     const client = await pool.connect();
@@ -10,7 +11,7 @@ export async function createFile(fileName) {
             `);
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
@@ -25,7 +26,7 @@ export async function getFileNameById(fileID) {
         return res?.rows[0]?.name || null;
     }
     catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     }
     finally {
