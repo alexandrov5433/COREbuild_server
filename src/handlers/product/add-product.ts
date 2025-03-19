@@ -82,6 +82,14 @@ export default async function addProduct(req: Request, res: Response) {
                 .end();
             return;
         }
+        if (!productData.manufacturer) {
+            res.status(400)
+                .json({
+                    msg: `The product manufacturer is missing.`
+                })
+                .end();
+            return;
+        }
 
         if (!thumbnailFile) {
             res.status(400)
