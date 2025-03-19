@@ -1,6 +1,6 @@
 import { QueryResult } from "pg";
 import { convertCentToWhole } from "../util/currency.js";
-import { ProductCreationData, ProductData, ProductsCatalogQueryParams, ShoppingCartData } from "./definitions.js";
+import { ProductCreationData, ProductData, ProductInfosEditingData, ProductsCatalogQueryParams, ShoppingCartData } from "./definitions.js";
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 
@@ -284,6 +284,36 @@ export async function getTotalPriceForProducts(items: ShoppingCartData) {
             allPricesSummed,
             missingProducts
         };
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function editProductInformation(productID: number, productData: ProductInfosEditingData) {
+    const client = await pool.connect();
+    try {
+        return await client.query(`
+            UPDATE product SET
+                "name"=$1,
+                "description"=$2,
+                "categoryID"=$3,
+                "price"=$4,
+                "stockCount"=$5,
+                "manufacturer"=$6
+            WHERE "productID"=$7
+            RETURNING *;
+            `, [
+                productData.name,
+                productData.description,
+                productData.categoryID,
+                productData.price,
+                productData.stockCount,
+                productData.manufacturer,
+                productID
+            ]);
     } catch (e) {
         logger.error(e.message, e);
         return null;

@@ -37,6 +37,16 @@ export type ProductCreationData = {
     pictures: Array<number>
 }
 
+export type ProductInfosEditingData = {
+    name: string,
+    description: string,
+    category: string,
+    categoryID: number,
+    price: number,
+    stockCount: number,
+    manufacturer: string
+}
+
 export type ReviewData = {
     reviewID?: number,
     rating: number,
