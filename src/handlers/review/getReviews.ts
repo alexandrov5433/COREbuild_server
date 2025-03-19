@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getReviewsForProduct } from "../../data/review.js";
 import url from 'node:url';
+import logger from "../../config/winston.js";
 
 export default async function getReviews(req: Request, res: Response) {
     try {
@@ -31,7 +32,7 @@ export default async function getReviews(req: Request, res: Response) {
         });
         res.end();
     } catch (e) {
-        console.log('ERROR:', e.message);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`

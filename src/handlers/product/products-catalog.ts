@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import url from 'node:url';
 import { ProductCatalogPagedResult, ProductsCatalogQueryParams } from "../../data/definitions.js";
 import { searchProducts } from "../../data/product.js";
+import logger from "../../config/winston.js";
 
 export default async function productsCatalog(req: Request, res: Response) {
     try {
@@ -33,8 +34,7 @@ export default async function productsCatalog(req: Request, res: Response) {
         });
         res.end();
     } catch (e) {
-        console.log(e.message);
-        console.log(e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`

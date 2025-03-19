@@ -1,6 +1,7 @@
 import { checkProductAvailability, increaseProductAvailability, reduceProductAvailability } from "./product.js";
 import { OrderData } from "./definitions.js";
 import { pool } from "./postgres.js";
+import logger from "../config/winston.js";
 
 export async function addNewOrder(orderData: OrderData) {
     const client = await pool.connect();
@@ -36,7 +37,7 @@ export async function addNewOrder(orderData: OrderData) {
         }
         return `Something went wrong when processing your order. Please refresh the page or contact us.`;
     } catch (e) {
-        console.error(e);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -55,7 +56,7 @@ export async function setOrderPaymentStatusToPaid(paypal_order_id: string) {
         }
         return `The payment status of order ID: ${paypal_order_id} could not be modified.`;
     } catch (e) {
-        console.error(e);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -74,7 +75,7 @@ export async function deleteOrder(orderID: number) {
         }
         return false;
     } catch (e) {
-        console.error(e);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -94,7 +95,7 @@ export async function hasCustomerBoughtProduct(userID: number, productID: number
         }
         return false;
     } catch (e) {
-        console.error(e);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -112,7 +113,7 @@ export async function getOrderByID(paypal_order_id: string) {
         }
         return false;
     } catch (e) {
-        console.error(e);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();

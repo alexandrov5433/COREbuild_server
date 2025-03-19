@@ -3,6 +3,7 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 import sp from 'node:stream/promises';
 import { getFileNameById } from "../../data/file.js";
+import logger from "../../config/winston.js";
 
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
@@ -63,7 +64,7 @@ export default async function file(req: Request, res: Response) {
         await sp.pipeline(fileSteam, res);
         res.end();
     } catch (e) {
-        console.log(e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`

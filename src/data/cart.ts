@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import { UserData } from "./definitions.js";
 import { pool } from "./postgres.js";
 
@@ -60,7 +61,7 @@ export async function addProductToCart(userID: number, productID: number, count:
         }
         return false;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -83,7 +84,7 @@ export async function getCartForUser(userID: number) {
         }
         return false;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -141,7 +142,7 @@ export async function removeProductFromCart(userID: number, productID: number, c
         }
         return false;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -162,7 +163,7 @@ export async function emptyUserCart(userID: number) {
         }
         return false;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();

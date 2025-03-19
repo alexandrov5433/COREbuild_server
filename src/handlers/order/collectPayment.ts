@@ -3,6 +3,7 @@ import { ordersController } from "../../config/paypal.js";
 import { ApiError } from "@paypal/paypal-server-sdk";
 import { setOrderPaymentStatusToPaid } from "../../data/order.js";
 import { emptyUserCart } from "../../data/cart.js";
+import logger from "../../config/winston.js";
 
 export default async function collectPayment(req: Request, res: Response) {
     try {
@@ -70,7 +71,7 @@ export default async function collectPayment(req: Request, res: Response) {
             }
         }
     } catch (e) {
-        console.log('ERROR:', e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`

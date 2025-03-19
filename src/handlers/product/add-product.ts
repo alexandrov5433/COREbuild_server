@@ -6,6 +6,7 @@ import { createFile } from "../../data/file.js";
 import { createProduct } from "../../data/product.js";
 import { ProductCreationData } from "../../data/definitions.js";
 import { createCategory } from "../../data/category.js";
+import logger from "../../config/winston.js";
 
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
@@ -211,8 +212,7 @@ export default async function addProduct(req: Request, res: Response) {
             })
             .end();
     } catch (e) {
-        console.log(e.message);
-        console.log(e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`

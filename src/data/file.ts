@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 
 export async function createFile(fileName: string) {
@@ -10,7 +11,7 @@ export async function createFile(fileName: string) {
             RETURNING *
             `)
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -24,7 +25,7 @@ export async function getFileNameById(fileID: number): Promise<string | null> {
             SELECT * FROM file WHERE "fileID"=$1`, [fileID]);
         return res?.rows[0]?.name || null;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();

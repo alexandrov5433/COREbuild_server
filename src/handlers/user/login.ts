@@ -49,6 +49,7 @@ export default async function login(req: Request, res: Response) {
             res.end();
         }
     } catch (e) {
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`

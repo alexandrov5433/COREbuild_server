@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import { ReviewData } from "./definitions.js";
 import { pool } from "./postgres.js";
 
@@ -26,7 +27,7 @@ export async function addReview(reviewData: ReviewData): Promise<ReviewData | nu
         ]);
         return res.rows[0] || null;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -45,7 +46,7 @@ export async function hasCustomerReviewedProduct(userID: number, productID: numb
         }
         return false;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -87,7 +88,7 @@ export async function getReviewsForProduct(productID: number, currentPage: numbe
             reviews: currentPagePortion
         };
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -114,7 +115,7 @@ export async function getRatingAndReviewCountForProduct(productID: number) {
             reviewsCount
         };
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();

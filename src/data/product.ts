@@ -2,6 +2,7 @@ import { QueryResult } from "pg";
 import { convertCentToWhole } from "../util/currency.js";
 import { ProductCreationData, ProductData, ProductsCatalogQueryParams, ShoppingCartData } from "./definitions.js";
 import { pool } from "./postgres.js";
+import logger from "../config/winston.js";
 
 export async function createProduct(productData: ProductCreationData) {
     const client = await pool.connect();
@@ -24,7 +25,7 @@ export async function createProduct(productData: ProductCreationData) {
             RETURNING *
             `)
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -100,7 +101,7 @@ export async function searchProducts(queryParams: ProductsCatalogQueryParams) {
             products: currentPagePortion
         };
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -130,7 +131,7 @@ export async function findProductById(productID: number): Promise<ProductData | 
             `, [productID]);
         return res.rows[0] || null;
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -169,7 +170,7 @@ export async function checkProductAvailability(items: ShoppingCartData) {
             unavailableProducts
         };
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -207,7 +208,7 @@ export async function reduceProductAvailability(items: ShoppingCartData) {
             reducedProducts
         };
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -245,7 +246,7 @@ export async function increaseProductAvailability(items: ShoppingCartData) {
             increasedProducts
         };
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();
@@ -284,7 +285,7 @@ export async function getTotalPriceForProducts(items: ShoppingCartData) {
             missingProducts
         };
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();

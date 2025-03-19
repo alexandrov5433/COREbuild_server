@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 
 export async function createCategory(categoryName: string) {
@@ -17,7 +18,7 @@ export async function createCategory(categoryName: string) {
                 SELECT * FROM category WHERE (name='${categoryName}')
             `);
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
         return null;
     } finally {
         client.release();

@@ -5,6 +5,7 @@ import { checkProductAvailability, getTotalPriceForProducts } from "../../data/p
 import { ApiError, CheckoutPaymentIntent } from '@paypal/paypal-server-sdk';
 import { convertCentToWhole } from "../../util/currency.js";
 import { ordersController } from "../../config/paypal.js";
+import logger from "../../config/winston.js";
 
 export default async function placeOrder(req: Request, res: Response) {
     try {
@@ -139,7 +140,7 @@ export default async function placeOrder(req: Request, res: Response) {
         }
 
     } catch (e) {
-        console.log('ERROR:', e);
+        logger.error(e.message, e);
         res.status(500);
         res.json({
             msg: `Error: ${(e as Error).message}`

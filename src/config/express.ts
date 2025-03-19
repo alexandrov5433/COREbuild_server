@@ -6,18 +6,13 @@ import { router } from "../router/index.js";
 import path from 'node:path';
 import { verifyDBConnection } from '../data/postgres.js'; //init Pool instance and check connection to DB
 import fileUpload from "express-fileupload";
+import logger from "./winston.js";
 
-// const corsOrigin = process.env.CORS_ORIGIN || '';
 const appAssetsPath = path.resolve('./dist_app');
 const PDF_SIZE_LIMIT_MB = Number(process.env.PDF_SIZE_LIMIT_MB) || 4;
 
 export default async function configExpress(app: any) {
     try {
-        // app.use(cors()); //TODO remove; added for vite dev server
-        // app.use(cors({
-        //     origin: corsOrigin,
-        //     credentials: true
-        // }));
         app.use(json());
         app.use(cookieParser());
         app.use(checkCookie);
@@ -34,7 +29,7 @@ export default async function configExpress(app: any) {
         app.use(router);
         await verifyDBConnection(); //implement fallback handlers?
     } catch (e) {
-        console.error(e.message);
+        logger.error(e.message, e);
     } finally {
         return app;
     }
