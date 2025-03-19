@@ -15,7 +15,7 @@ export default async function productDetails(req: Request, res: Response) {
         }
         const productData = await findProductById(productID);
         if (!productData) {
-            res.status(204);
+            res.status(400);
             res.json({
                 msg: `Could not find a product with ID: "${productID}".`
             });
