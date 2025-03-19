@@ -24,7 +24,7 @@ export default async function productDetails(req: Request, res: Response) {
         }
         res.status(200);
         res.json({
-            msg: 'TODO',
+            msg: 'Product found.',
             payload: productData
         });
         res.end();
