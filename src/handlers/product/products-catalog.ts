@@ -11,12 +11,12 @@ export default async function productsCatalog(req: Request, res: Response) {
         const queryParams: ProductsCatalogQueryParams = {
             currentPage: Number(allQueryParams?.currentPage) || 1,
             itemsPerPage: Number(allQueryParams?.itemsPerPage) || 12,
-            name: allQueryParams?.name.toString() || '',
-            category: allQueryParams?.category.toString() || '',
-            priceFrom: allQueryParams?.priceFrom.toString() || '',
-            priceTo: allQueryParams?.priceTo.toString() || '',
-            availableInStock: allQueryParams?.availableInStock.toString() || '',
-            manufacturer: allQueryParams?.manufacturer.toString() || '',
+            name: allQueryParams?.name?.toString() || '',
+            category: allQueryParams?.category?.toString() || '',
+            priceFrom: allQueryParams?.priceFrom?.toString() || '',
+            priceTo: allQueryParams?.priceTo?.toString() || '',
+            availableInStock: allQueryParams?.availableInStock?.toString() || '',
+            manufacturer: allQueryParams?.manufacturer?.toString() || '',
         }
         const result: ProductCatalogPagedResult | null = await searchProducts(queryParams);    
         if (!result) {
