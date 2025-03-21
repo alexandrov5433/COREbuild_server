@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 
 export default class Guard {
     static allowCustomer(req: Request, res: Response, next: NextFunction) {
-        const { userID, is_employee } = req.cookies.userSession;
+        const userID = req.cookies?.userSession?.userID;
+        const is_employee = req.cookies?.userSession?.is_employee;
         if (!userID) {
             res.redirect('/');
             res.end();
@@ -17,7 +18,8 @@ export default class Guard {
     }
 
     static allowEmployee(req: Request, res: Response, next: NextFunction) {
-        const { userID, is_employee } = req.cookies.userSession;
+        const userID = req.cookies?.userSession?.userID;
+        const is_employee = req.cookies?.userSession?.is_employee;
         if (!userID) {
             res.redirect('/');
             res.end();
@@ -32,7 +34,7 @@ export default class Guard {
     }
 
     static allowGuest(req: Request, res: Response, next: NextFunction) {
-        if (req.cookies.userSession === null) {
+        if (req.cookies?.userSession === null) {
             return next();
         }
         res.redirect('/');
@@ -41,7 +43,7 @@ export default class Guard {
     }
 
     static allowUser(req: Request, res: Response, next: NextFunction) {
-        if (req.cookies.userSession) {
+        if (req.cookies?.userSession) {
             return next();
         }
         res.redirect('/');
