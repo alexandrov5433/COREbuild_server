@@ -55,3 +55,17 @@ export async function removeFile(fileID: number) {
         client.release();
     }
 }
+
+export async function getFileById(fileID: number): Promise<FileData | null> {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT * FROM file WHERE "fileID"=$1`, [fileID]);
+        return res?.rows?.[0] || null;
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
