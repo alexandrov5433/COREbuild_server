@@ -42,6 +42,7 @@ export default async function login(req: Request, res: Response) {
             res.end();
             logger.info(`User ${dbResponse?.rows[0].username} with ID: ${dbResponse?.rows[0].userID} logged in successfully.`);
         } else {
+            logger.info(`False login credentials.`, bodyData);
             res.status(400);
             res.json({
                 msg: 'False login credentials.'
