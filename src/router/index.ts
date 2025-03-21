@@ -22,6 +22,7 @@ import getCustomerReviewedProduct from "../handlers/review/getCustomerReviewedPr
 import cancelPayment from "../handlers/order/cancelPayment.js";
 import editProductInfos from "../handlers/product/editProductInfos.js";
 import getAllProductCategories from "../handlers/product/getAllProductCategories.js";
+import updateProductThumbnail from "../handlers/product/updateProductThumbnail.js";
 
 const router = Router();
 
@@ -37,6 +38,7 @@ router.get('/api/product-details/:productID', productDetails);
 router.get('/api/products-catalog', productsCatalog);
 router.post('/api/edit-products-infos/:productID', Guard.allowEmployee, editProductInfos);
 router.get('/api/product-categories', getAllProductCategories);
+router.post('/api/update-product-thumbnail/:productID', Guard.allowEmployee, updateProductThumbnail);
 
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);

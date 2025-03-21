@@ -340,3 +340,21 @@ export async function getAllProdcutsCategoriesFromDB() {
         client.release();
     }
 }
+
+export async function updateProductThumbnailInDB(newThumbnailID: number, productID: number) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE product SET "thumbnailID"=$1 WHERE "productID"=$2 RETURNING *;
+            `, [newThumbnailID, productID]);
+        if (res.rows[0]?.productID) {
+            return res.rows[0];
+        }
+        return false;
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
