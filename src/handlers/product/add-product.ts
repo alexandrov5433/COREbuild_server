@@ -178,7 +178,7 @@ export default async function addProduct(req: Request, res: Response) {
         const newThumbnailName = `${uuidv4()}---${thumbnailFile.name}`;
         thumbnailFile.name = newThumbnailName;
         thumbnailFile.mv(`${PICS_STORAGE_PATH}/${newThumbnailName}`);
-        const thumbnailID = (await createFile(newThumbnailName))?.rows[0]?.fileID;
+        const thumbnailID = (await createFile(newThumbnailName))?.fileID;
         let pictures = [];
         let specsDocID = null;
         if (picturesFiles) {
