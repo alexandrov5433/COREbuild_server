@@ -1,7 +1,8 @@
 import logger from "../config/winston.js";
+import { FileData } from "./definitions.js";
 import { pool } from "./postgres.js";
 
-export async function createFile(fileName: string) {
+export async function createFile(fileName: string): Promise<FileData | boolean | null> {
     const client = await pool.connect();
     try {
         const res = await client.query(`

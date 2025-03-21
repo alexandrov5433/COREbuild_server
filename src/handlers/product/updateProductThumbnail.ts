@@ -6,6 +6,7 @@ import path from "node:path";
 import fsp from "node:fs/promises";
 import { v4 as uuidv4 } from 'uuid';
 import { createFile, removeFile } from "../../data/file.js";
+import { FileData } from "../../data/definitions.js";
 
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
 const PICTURE_SIZE_LIMIT_MB = Number(process.env.PICTURE_SIZE_LIMIT_MB) || 0.5;
@@ -56,8 +57,8 @@ export default async function updateProductThumbnail(req: Request, res: Response
         }
         const newThumbnailName = `${uuidv4()}---${thumbnailFile.name}`;
         thumbnailFile.name = newThumbnailName;
-        thumbnailFile.mv(`${PICS_STORAGE_PATH}/${newThumbnailName}`);
-        const newThumbnailID = (await createFile(newThumbnailName))?.fileID;
+        await thumbnailFile.mv(`${PICS_STORAGE_PATH}/${newThumbnailName}`);
+        const newThumbnailID = (await createFile(newThumbnailName) as FileData)?.fileID;
         if (!newThumbnailID) {
             res.status(400);
             res.json({
