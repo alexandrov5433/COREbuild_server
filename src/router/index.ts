@@ -21,6 +21,7 @@ import getReviews from "../handlers/review/getReviews.js";
 import getCustomerReviewedProduct from "../handlers/review/getCustomerReviewedProduct.js";
 import cancelPayment from "../handlers/order/cancelPayment.js";
 import editProductInfos from "../handlers/product/editProductInfos.js";
+import getAllProductCategories from "../handlers/product/getAllProductCategories.js";
 
 const router = Router();
 
@@ -35,6 +36,7 @@ router.post('/api/add-product', Guard.allowEmployee, addProduct);
 router.get('/api/product-details/:productID', productDetails);
 router.get('/api/products-catalog', productsCatalog);
 router.post('/api/edit-products-infos/:productID', Guard.allowEmployee, editProductInfos);
+router.get('/api/product-categories', getAllProductCategories);
 
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);

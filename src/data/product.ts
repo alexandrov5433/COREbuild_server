@@ -306,14 +306,33 @@ export async function editProductInformation(productID: number, productData: Pro
             WHERE "productID"=$7
             RETURNING *;
             `, [
-                productData.name,
-                productData.description,
-                productData.categoryID,
-                productData.price,
-                productData.stockCount,
-                productData.manufacturer,
-                productID
-            ]);
+            productData.name,
+            productData.description,
+            productData.categoryID,
+            productData.price,
+            productData.stockCount,
+            productData.manufacturer,
+            productID
+        ]);
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function getAllProdcutsCategoriesFromDB() {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`SELECT "name" FROM "category";`,);
+        if (res?.rows.length) {
+            return res?.rows.reduce((acc, cur) => {
+                acc.push(cur.name);
+                return acc;
+            }, []);
+        }
+        return [];
     } catch (e) {
         logger.error(e.message, e);
         return null;
