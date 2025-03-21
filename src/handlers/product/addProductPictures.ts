@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { findProductById, updateProductPicturesInDB, updateProductThumbnailInDB } from "../../data/product.js";
+import { findProductById, updateProductPicturesInDB } from "../../data/product.js";
 import logger from "../../config/winston.js";
 import { UploadedFile } from "express-fileupload";
 import path from "node:path";
