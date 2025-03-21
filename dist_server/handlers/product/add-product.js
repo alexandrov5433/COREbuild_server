@@ -4,6 +4,7 @@ import { createFile } from "../../data/file.js";
 import { createProduct } from "../../data/product.js";
 import { createCategory } from "../../data/category.js";
 import logger from "../../config/winston.js";
+import { reduceSpacesBetweenWordsToOne } from "../../util/string.js";
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
 const MAX_PICTURE_COUNT = Number(process.env.MAX_PICTURE_COUNT) || 5;
@@ -70,6 +71,14 @@ export default async function addProduct(req, res) {
             res.status(400)
                 .json({
                 msg: `The stock count must be 0 or greater and a whole number.`
+            })
+                .end();
+            return;
+        }
+        if (!productData.manufacturer) {
+            res.status(400)
+                .json({
+                msg: `The product manufacturer is missing.`
             })
                 .end();
             return;
@@ -162,8 +171,8 @@ export default async function addProduct(req, res) {
         }
         const newThumbnailName = `${uuidv4()}---${thumbnailFile.name}`;
         thumbnailFile.name = newThumbnailName;
-        thumbnailFile.mv(`${PICS_STORAGE_PATH}/${newThumbnailName}`);
-        const thumbnailID = (await createFile(newThumbnailName))?.rows[0]?.fileID;
+        await thumbnailFile.mv(`${PICS_STORAGE_PATH}/${newThumbnailName}`);
+        const thumbnailID = (await createFile(newThumbnailName))?.fileID;
         let pictures = [];
         let specsDocID = null;
         if (picturesFiles) {
@@ -172,7 +181,7 @@ export default async function addProduct(req, res) {
                     const newPictureName = `${uuidv4()}---${f.name}`;
                     f.name = newPictureName;
                     f.mv(`${PICS_STORAGE_PATH}/${newPictureName}`);
-                    const newPicID = (await createFile(newPictureName))?.rows[0]?.fileID;
+                    const newPicID = (await createFile(newPictureName))?.fileID;
                     pictures.push(newPicID);
                 });
             }
@@ -180,7 +189,7 @@ export default async function addProduct(req, res) {
                 const newPictureName = `${uuidv4()}---${picturesFiles.name}`;
                 picturesFiles.name = newPictureName;
                 picturesFiles.mv(`${PICS_STORAGE_PATH}/${newPictureName}`);
-                const newPicID = (await createFile(newPictureName))?.rows[0]?.fileID;
+                const newPicID = (await createFile(newPictureName))?.fileID;
                 pictures.push(newPicID);
             }
         }
@@ -188,7 +197,7 @@ export default async function addProduct(req, res) {
             const newSpecsDocName = `${uuidv4()}---${specsDocFile.name}`;
             specsDocFile.name = newSpecsDocName;
             specsDocFile.mv(`${DOCS_STORAGE_PATH}/${newSpecsDocName}`);
-            specsDocID = (await createFile(newSpecsDocName))?.rows[0]?.fileID;
+            specsDocID = (await createFile(newSpecsDocName))?.fileID;
         }
         productData.thumbnailID = thumbnailID;
         productData.pictures = pictures.length > 0 ? pictures : null;
@@ -211,8 +220,5 @@ export default async function addProduct(req, res) {
         });
         res.end();
     }
-}
-function reduceSpacesBetweenWordsToOne(sentance) {
-    return sentance.trim().split(' ').filter(e => e != ' ' && e).join(' ');
 }
 //# sourceMappingURL=add-product.js.map

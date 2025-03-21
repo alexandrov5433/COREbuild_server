@@ -18,6 +18,11 @@ import getRatingAndReviewCount from "../handlers/review/getRatingAndReviewCount.
 import getReviews from "../handlers/review/getReviews.js";
 import getCustomerReviewedProduct from "../handlers/review/getCustomerReviewedProduct.js";
 import cancelPayment from "../handlers/order/cancelPayment.js";
+import editProductInfos from "../handlers/product/editProductInfos.js";
+import getAllProductCategories from "../handlers/product/getAllProductCategories.js";
+import updateProductThumbnail from "../handlers/product/updateProductThumbnail.js";
+import addProductPictures from "../handlers/product/addProductPictures.js";
+import deletePictureOfProdcut from "../handlers/product/deleteProductPicture.js";
 const router = Router();
 // user
 router.post('/api/login', Guard.allowGuest, login);
@@ -28,6 +33,11 @@ router.get('/api/validate-cookie', validateCookie);
 router.post('/api/add-product', Guard.allowEmployee, addProduct);
 router.get('/api/product-details/:productID', productDetails);
 router.get('/api/products-catalog', productsCatalog);
+router.post('/api/edit-products-infos/:productID', Guard.allowEmployee, editProductInfos);
+router.get('/api/product-categories', getAllProductCategories);
+router.post('/api/update-product-thumbnail/:productID', Guard.allowEmployee, updateProductThumbnail);
+router.post('/api/add-product-pictures/:productID', Guard.allowEmployee, addProductPictures);
+router.delete('/api/delete-product-picture/:productID/:pictureToDeleteID', Guard.allowEmployee, deletePictureOfProdcut);
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);
 // shopping cart

@@ -1,6 +1,7 @@
 import { hasCustomerBoughtProduct } from "../../data/order.js";
 import { addReview, hasCustomerReviewedProduct } from "../../data/review.js";
 import logger from "../../config/winston.js";
+import { findUserByUserID } from "../../data/user.js";
 export default async function addNewReview(req, res) {
     try {
         const userID = Number(req.cookies.userSession.userID);
@@ -24,6 +25,15 @@ export default async function addNewReview(req, res) {
             res.status(400);
             res.json({
                 msg: 'Missing productID.'
+            });
+            res.end();
+            return;
+        }
+        const userData = await findUserByUserID(userID);
+        if (!userData || userData?.rows[0]?.is_employee) {
+            res.status(400);
+            res.json({
+                msg: 'Reviewer must be a customer user.'
             });
             res.end();
             return;

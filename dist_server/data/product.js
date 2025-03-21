@@ -290,4 +290,93 @@ export async function getTotalPriceForProducts(items) {
         client.release();
     }
 }
+export async function editProductInformation(productID, productData) {
+    const client = await pool.connect();
+    try {
+        return await client.query(`
+            UPDATE product SET
+                "name"=$1,
+                "description"=$2,
+                "categoryID"=$3,
+                "price"=$4,
+                "stockCount"=$5,
+                "manufacturer"=$6
+            WHERE "productID"=$7
+            RETURNING *;
+            `, [
+            productData.name,
+            productData.description,
+            productData.categoryID,
+            productData.price,
+            productData.stockCount,
+            productData.manufacturer,
+            productID
+        ]);
+    }
+    catch (e) {
+        logger.error(e.message, e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function getAllProdcutsCategoriesFromDB() {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`SELECT "name" FROM "category";`);
+        if (res?.rows.length) {
+            return res?.rows.reduce((acc, cur) => {
+                acc.push(cur.name);
+                return acc;
+            }, []);
+        }
+        return [];
+    }
+    catch (e) {
+        logger.error(e.message, e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function updateProductThumbnailInDB(newThumbnailID, productID) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE product SET "thumbnailID"=$1 WHERE "productID"=$2 RETURNING *;
+            `, [newThumbnailID, productID]);
+        if (res.rows[0]?.productID) {
+            return res.rows[0];
+        }
+        return false;
+    }
+    catch (e) {
+        logger.error(e.message, e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function updateProductPicturesInDB(allPictures, productID) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE product SET "pictures"=$1 WHERE "productID"=$2 RETURNING *;
+            `, [allPictures, productID]);
+        if (res.rows[0]?.productID) {
+            return res.rows[0];
+        }
+        return false;
+    }
+    catch (e) {
+        logger.error(e.message, e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
 //# sourceMappingURL=product.js.map

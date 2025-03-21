@@ -61,9 +61,6 @@ export default async function file(req, res) {
     catch (e) {
         logger.error(e.message, e);
         res.status(500);
-        res.json({
-            msg: `Error: ${e.message}`
-        });
         res.end();
     }
 }

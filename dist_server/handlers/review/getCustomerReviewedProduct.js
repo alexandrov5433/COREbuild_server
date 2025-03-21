@@ -3,7 +3,7 @@ import logger from "../../config/winston.js";
 export default async function getCustomerReviewedProduct(req, res) {
     try {
         const productID = Number(req.params.productID) || null;
-        const userID = Number(req.cookies.userSession.userID);
+        const userID = Number(req.cookies.userSession?.userID);
         if (!productID) {
             res.status(400);
             res.json({
