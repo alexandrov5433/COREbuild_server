@@ -4,12 +4,16 @@ import { pool } from "./postgres.js";
 export async function createFile(fileName: string) {
     const client = await pool.connect();
     try {
-        return await client.query(`
+        const res = await client.query(`
             INSERT INTO "file" VALUES(
                 DEFAULT,
                 '${fileName}')
             RETURNING *
             `)
+        if (res.rows[0]?.fileID) {
+            return res.rows[0];
+        }
+        return false;
     } catch (e) {
         logger.error(e.message, e);
         return null;
@@ -24,6 +28,25 @@ export async function getFileNameById(fileID: number): Promise<string | null> {
         const res = await client.query(`
             SELECT * FROM file WHERE "fileID"=$1`, [fileID]);
         return res?.rows[0]?.name || null;
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function removeFile(fileID: number) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            DELETE FROM "file" WHERE "fileID"=$1
+            RETURNING *
+            `, [fileID]);
+        if (res.rows[0]?.fileID) {
+            return res.rows[0];
+        }
+        return false;
     } catch (e) {
         logger.error(e.message, e);
         return null;
