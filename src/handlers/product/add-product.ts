@@ -4,7 +4,7 @@ import path from "node:path";
 import { v4 as uuidv4 } from 'uuid';
 import { createFile } from "../../data/file.js";
 import { createProduct } from "../../data/product.js";
-import { ProductCreationData } from "../../data/definitions.js";
+import { FileData, ProductCreationData } from "../../data/definitions.js";
 import { createCategory } from "../../data/category.js";
 import logger from "../../config/winston.js";
 import { reduceSpacesBetweenWordsToOne } from "../../util/string.js";
@@ -177,8 +177,8 @@ export default async function addProduct(req: Request, res: Response) {
 
         const newThumbnailName = `${uuidv4()}---${thumbnailFile.name}`;
         thumbnailFile.name = newThumbnailName;
-        thumbnailFile.mv(`${PICS_STORAGE_PATH}/${newThumbnailName}`);
-        const thumbnailID = (await createFile(newThumbnailName))?.fileID;
+        await thumbnailFile.mv(`${PICS_STORAGE_PATH}/${newThumbnailName}`);
+        const thumbnailID = (await createFile(newThumbnailName) as FileData)?.fileID;
         let pictures = [];
         let specsDocID = null;
         if (picturesFiles) {
@@ -187,14 +187,14 @@ export default async function addProduct(req: Request, res: Response) {
                     const newPictureName = `${uuidv4()}---${f.name}`;
                     f.name = newPictureName;
                     f.mv(`${PICS_STORAGE_PATH}/${newPictureName}`);
-                    const newPicID = (await createFile(newPictureName))?.rows[0]?.fileID;
+                    const newPicID = (await createFile(newPictureName) as FileData)?.fileID;
                     pictures.push(newPicID);
                 });
             } else {
                 const newPictureName = `${uuidv4()}---${picturesFiles.name}`;
                 picturesFiles.name = newPictureName;
                 picturesFiles.mv(`${PICS_STORAGE_PATH}/${newPictureName}`);
-                const newPicID = (await createFile(newPictureName))?.rows[0]?.fileID;
+                const newPicID = (await createFile(newPictureName) as FileData)?.fileID;
                 pictures.push(newPicID);
             }
         }
@@ -202,7 +202,7 @@ export default async function addProduct(req: Request, res: Response) {
             const newSpecsDocName = `${uuidv4()}---${specsDocFile.name}`;
             specsDocFile.name = newSpecsDocName;
             specsDocFile.mv(`${DOCS_STORAGE_PATH}/${newSpecsDocName}`);
-            specsDocID = (await createFile(newSpecsDocName))?.rows[0]?.fileID;
+            specsDocID = (await createFile(newSpecsDocName) as FileData)?.fileID;
         }
 
         productData.thumbnailID = thumbnailID;
