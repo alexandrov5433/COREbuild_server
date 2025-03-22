@@ -25,6 +25,8 @@ import getAllProductCategories from "../handlers/product/getAllProductCategories
 import updateProductThumbnail from "../handlers/product/updateProductThumbnail.js";
 import addProductPictures from "../handlers/product/addProductPictures.js";
 import deletePictureOfProdcut from "../handlers/product/deleteProductPicture.js";
+import deleteProductSpecsDoc from "../handlers/product/deleteProductSpecsDoc.js";
+import updateProductSpecsDoc from "../handlers/product/updateProductSpecsDoc.js";
 
 const router = Router();
 
@@ -43,6 +45,8 @@ router.get('/api/product-categories', getAllProductCategories);
 router.post('/api/update-product-thumbnail/:productID', Guard.allowEmployee, updateProductThumbnail);
 router.post('/api/add-product-pictures/:productID', Guard.allowEmployee, addProductPictures);
 router.delete('/api/delete-product-picture/:productID/:pictureToDeleteID', Guard.allowEmployee, deletePictureOfProdcut);
+router.delete('/api/delete-product-document/:productID/:specsDocToDeleteID', Guard.allowEmployee, deleteProductSpecsDoc);
+router.put('/api/update-product-document/:productID', Guard.allowEmployee, updateProductSpecsDoc);
 
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);
