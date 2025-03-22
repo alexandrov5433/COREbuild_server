@@ -379,4 +379,23 @@ export async function updateProductPicturesInDB(allPictures, productID) {
         client.release();
     }
 }
+export async function updateProductSpecsDocRefInDB(newSpecsDocRef, productID) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE product SET "specsDocID"=$1 WHERE "productID"=$2 RETURNING *;
+            `, [newSpecsDocRef, productID]);
+        if (res.rows[0]?.productID) {
+            return res.rows[0];
+        }
+        return null;
+    }
+    catch (e) {
+        logger.error(e.message, e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
 //# sourceMappingURL=product.js.map

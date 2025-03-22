@@ -4,7 +4,10 @@ export async function findUserByUsername(username) {
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE (username='${username}')`);
-        return res;
+        if (res.rows?.[0].userID) {
+            return res.rows[0];
+        }
+        return null;
     }
     catch (e) {
         logger.error(e.message, e);

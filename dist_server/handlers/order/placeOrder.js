@@ -22,7 +22,9 @@ export default async function placeOrder(req, res) {
             recipient: userID,
             placement_time: new Date().getTime(),
             total_price: 0,
-            paypal_order_id: ''
+            paypal_order_id: '',
+            shipping_speditor: null,
+            shipment_tracking_code: null
         };
         const checkResult = await checkProductAvailability(orderData.content);
         if (!checkResult) {
