@@ -7,53 +7,46 @@ import logger from "../../config/winston.js";
 export default async function login(req: Request, res: Response) {
     try {
         const bodyData = {
-            username: req.body.username || '',
-            password: req.body.password || '',
-            stayLoggedIn: req.body.stayLoggedIn || ''
+            username: req.body?.username || '',
+            password: req.body?.password || '',
+            stayLoggedIn: req.body?.stayLoggedIn || ''
         };
         if (bodyData.username && bodyData.password) {
-            const dbResponse = await findUserByUsername(bodyData.username);
-            const isPasswordCorrect = await bcrypt.compare(bodyData.password, dbResponse?.rows[0].password);
-            if (!isPasswordCorrect) {
-                res.status(400);
-                res.json({
-                    msg: 'False login credentials.'
-                });
-                res.end();
-                return;
+            const userData = await findUserByUsername(bodyData.username);
+            if (!userData) {
+                throw new Error(`A user with these credentials was not found.`);
             }
-            const jwt = await createJWT({ userID: dbResponse?.rows[0].userID, is_employee: dbResponse?.rows[0].is_employee });
+            const isPasswordCorrect = await bcrypt.compare(bodyData.password, userData.password);
+            if (!isPasswordCorrect) {
+                throw new Error('False login credentials.');
+            }
+            const jwt = await createJWT({ userID: userData.userID.toString(), is_employee: userData.is_employee });
             const cookieMaxAge = bodyData.stayLoggedIn ? ' Max-Age=31556952;' : '';
             res.status(200);
             res.setHeader('Set-Cookie', `session=${jwt};${cookieMaxAge} Path=/; HttpOnly; Secure;`);
             res.json({
                 msg: 'Login successful.',
                 payload: {
-                    userID: dbResponse?.rows[0].userID,
-                    is_employee: dbResponse?.rows[0].is_employee,
-                    username: dbResponse?.rows[0].username,
-                    email: dbResponse?.rows[0].email || null,
-                    firstname: dbResponse?.rows[0].firstname || null,
-                    lastname: dbResponse?.rows[0].lastname || null,
-                    prefered_payment_method: dbResponse?.rows[0].prefered_payment_method || null,
-                    address: dbResponse?.rows[0].address || null
+                    userID: userData.userID,
+                    is_employee: userData.is_employee,
+                    username: userData.username,
+                    email: userData.email || null,
+                    firstname: userData.firstname || null,
+                    lastname: userData.lastname || null,
+                    address: userData.address || null
                 }
             });
             res.end();
-            logger.info(`User ${dbResponse?.rows[0].username} with ID: ${dbResponse?.rows[0].userID} logged in successfully.`);
+            logger.info(`User ${userData.username} with ID: ${userData.userID} logged in successfully.`);
         } else {
-            logger.info(`False login credentials.`, bodyData);
-            res.status(400);
-            res.json({
-                msg: 'False login credentials.'
-            });
-            res.end();
+            logger.info(`Missing login credentials.`, bodyData);
+            throw new Error('Missing login credentials.');
         }
     } catch (e) {
         logger.error(e.message, e);
-        res.status(500);
+        res.status(400);
         res.json({
-            msg: `Error: ${(e as Error).message}`
+            msg: e.message
         });
         res.end();
     }
