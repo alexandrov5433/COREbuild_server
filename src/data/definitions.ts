@@ -111,6 +111,16 @@ export type OrderData = {
     shipment_tracking_code: string | null
 }
 
+export type OrderFiltrationOptions = {
+    orderID: number | null,
+    recipientID: number | null,
+    shipping_status: 'pending' | 'shipped' | null,
+    timeAscending: boolean,
+    timeDescending: boolean,
+    currentPage: number,
+    itemsPerPage: number
+};
+
 export type ShoppingCartData = {
     [key: number]: number
 }

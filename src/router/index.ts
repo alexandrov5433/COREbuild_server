@@ -27,6 +27,7 @@ import addProductPictures from "../handlers/product/addProductPictures.js";
 import deletePictureOfProdcut from "../handlers/product/deleteProductPicture.js";
 import deleteProductSpecsDoc from "../handlers/product/deleteProductSpecsDoc.js";
 import updateProductSpecsDoc from "../handlers/product/updateProductSpecsDoc.js";
+import getFilteredOrders from "../handlers/order/getFilteredOrders.js";
 
 const router = Router();
 
@@ -60,6 +61,7 @@ router.get('/api/cart/:userID', Guard.allowCustomer, getCart);
 router.post('/api/order', Guard.allowCustomer, placeOrder);
 router.get('/api/collect-payment/:paypalOrderID', Guard.allowCustomer, collectPayment);
 router.get('/api/cancel-payment/:paypalOrderID', Guard.allowCustomer, cancelPayment);
+router.get('/api/filtered-orders', Guard.allowUser, getFilteredOrders);
 
 // review
 router.post('/api/review', Guard.allowCustomer, addNewReview);

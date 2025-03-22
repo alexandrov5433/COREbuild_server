@@ -1,5 +1,5 @@
 import { checkProductAvailability, increaseProductAvailability, reduceProductAvailability } from "./product.js";
-import { OrderData } from "./definitions.js";
+import { OrderData, OrderFiltrationOptions } from "./definitions.js";
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 
@@ -114,6 +114,55 @@ export async function getOrderByID(paypal_order_id: string) {
             return res.rows[0];
         }
         return false;
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltrationOptions) {
+    const client = await pool.connect();
+    try {
+        let currentPage = filtrationOptions.currentPage || 1;
+        const itemsPerPage = filtrationOptions.itemsPerPage || 5;
+        const res = await client.query(`SELECT * FROM "order";`);
+        let payload: Array<OrderData> = res.rows;
+
+        // filter
+        if (filtrationOptions.orderID) {
+            payload = payload.filter(order => order.id == filtrationOptions.orderID)
+        }
+        if (filtrationOptions.recipientID) {
+            payload = payload.filter(order => order.recipient == filtrationOptions.recipientID)
+        }
+        if (filtrationOptions.shipping_status) {
+            payload = payload.filter(order => order.shipping_status == filtrationOptions.shipping_status)
+        }
+
+        // sort
+        if (filtrationOptions.timeAscending) {
+            payload.sort((a, b) => a.placement_time - b.placement_time);
+        }
+        if (filtrationOptions.timeDescending) {
+            payload.sort((a, b) => b.placement_time - a.placement_time);
+        }
+   
+        
+        const pagesCount = Math.ceil(payload.length / itemsPerPage);
+        if (currentPage > pagesCount) {
+            currentPage = 1;
+        }
+        const currentPagePortion = payload.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+        );
+        return {
+            pagesCount,
+            currentPage,
+            orders: currentPagePortion
+        };
     } catch (e) {
         logger.error(e.message, e);
         return null;
