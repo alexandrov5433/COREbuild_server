@@ -106,7 +106,9 @@ export type OrderData = {
     recipient: UserData['userID'],
     placement_time: number,
     total_price: number,
-    paypal_order_id: string
+    paypal_order_id: string,
+    shipping_speditor: string | null,
+    shipment_tracking_code: string | null
 }
 
 export type ShoppingCartData = {

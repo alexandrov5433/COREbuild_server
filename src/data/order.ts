@@ -15,7 +15,9 @@ export async function addNewOrder(orderData: OrderData) {
                 $4,
                 $5,
                 $6,
-                $7
+                $7,
+                DEFAULT,
+                DEFAULT
             ) RETURNING *;
         `, [
             orderData.payment_status,

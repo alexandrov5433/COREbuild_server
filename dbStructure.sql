@@ -63,9 +63,13 @@ CREATE TABLE "order" (
     "recipient" int NOT NULL REFERENCES "user" ("userID"),
     "placement_time" bigint NOT NULL,
     "total_price" int NOT NULL,
-    "paypal_order_id" text NOT NULL
+    "paypal_order_id" text NOT NULL,
+    "shipping_speditor" text DEFAULT NULL,
+    "shipment_tracking_code" text DEFAULT NULL
 )
 ALTER TABLE "order" ADD COLUMN "total_price" int NOT NULL;
 ALTER TABLE "order" ADD COLUMN "paypal_order_id" text NOT NULL;
+ALTER TABLE "order" ADD COLUMN "shipping_speditor" text DEFAULT NULL;
+ALTER TABLE "order" ADD COLUMN "shipment_tracking_code" text DEFAULT NULL;
 
 DROP TABLE IF EXISTS "user", "product", "review", "file", "category" CASCADE;
