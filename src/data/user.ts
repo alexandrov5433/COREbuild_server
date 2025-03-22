@@ -1,12 +1,15 @@
 import { pool } from "./postgres.js";
-import { RegsiterData } from "./definitions.js";
+import { RegsiterData, UserData } from "./definitions.js";
 import logger from "../config/winston.js";
 
-export async function findUserByUsername(username: string) {
+export async function findUserByUsername(username: string): Promise<UserData | null> {
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE (username='${username}')`)
-        return res;
+        if (res.rows?.[0].userID) {
+            return res.rows[0];
+        }
+        return null;
     } catch (e) {
         logger.error(e.message, e);
         return null;
