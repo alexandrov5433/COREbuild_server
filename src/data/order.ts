@@ -122,11 +122,29 @@ export async function getOrderByID(paypal_order_id: string) {
     }
 }
 
+export async function getOrderByOrderID(orderID: number): Promise<OrderData | null> {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT * FROM "order" WHERE "id"=$1;
+        `, [orderID]);
+        if (res.rows[0].id) {
+            return res.rows[0];
+        }
+        return null;
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
 export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltrationOptions) {
     const client = await pool.connect();
     try {
         let currentPage = filtrationOptions.currentPage || 1;
-        const itemsPerPage = filtrationOptions.itemsPerPage || 5;
+        const itemsPerPage = filtrationOptions.itemsPerPage || 4;
         const res = await client.query(`SELECT * FROM "order";`);
         let payload: Array<OrderData> = res.rows;
 
@@ -148,7 +166,7 @@ export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltration
         if (filtrationOptions.time == 'descending') {
             payload.sort((a, b) => Number(b.placement_time) - Number(a.placement_time));
         }
-        
+
         const pagesCount = Math.ceil(payload.length / itemsPerPage);
         if (currentPage > pagesCount) {
             currentPage = 1;
@@ -162,6 +180,35 @@ export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltration
             currentPage,
             orders: currentPagePortion
         };
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function updateOrderShippingDetailsInDB(
+    orderID: number, newShippingData: {
+        shipping_status: 'pending' | 'sent',
+        shipping_speditor: string | null,
+        shipment_tracking_code: string | null
+    }
+): Promise<OrderData | null> {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE "order" SET 
+                "shipping_status"=$2,
+                "shipping_speditor"=$3,
+                "shipment_tracking_code"=$4 
+            WHERE "id"=$1
+            RETURNING *;
+        `, [orderID, newShippingData.shipping_status, newShippingData.shipping_speditor, newShippingData.shipment_tracking_code]);
+        if (res.rows[0].id) {
+            return res.rows[0];
+        }
+        return null;
     } catch (e) {
         logger.error(e.message, e);
         return null;

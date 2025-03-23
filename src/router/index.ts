@@ -28,6 +28,8 @@ import deletePictureOfProdcut from "../handlers/product/deleteProductPicture.js"
 import deleteProductSpecsDoc from "../handlers/product/deleteProductSpecsDoc.js";
 import updateProductSpecsDoc from "../handlers/product/updateProductSpecsDoc.js";
 import getFilteredOrders from "../handlers/order/getFilteredOrders.js";
+import getUserData from "../handlers/user/getUserData.js";
+import updateOrderShippingDetails from "../handlers/order/updateOrderShippingDetails.js";
 
 const router = Router();
 
@@ -36,6 +38,7 @@ router.post('/api/login', Guard.allowGuest, login);
 router.post('/api/register', Guard.allowGuest, register);
 router.get('/api/logout', Guard.allowUser, logout);
 router.get('/api/validate-cookie', validateCookie);
+router.get('/api/user-data/:userID', Guard.allowUser, getUserData);
 
 // product
 router.post('/api/add-product', Guard.allowEmployee, addProduct);
@@ -62,6 +65,7 @@ router.post('/api/order', Guard.allowCustomer, placeOrder);
 router.get('/api/collect-payment/:paypalOrderID', Guard.allowCustomer, collectPayment);
 router.get('/api/cancel-payment/:paypalOrderID', Guard.allowCustomer, cancelPayment);
 router.get('/api/filtered-orders', Guard.allowUser, getFilteredOrders);
+router.post('/api/update-order-shipping-details/:orderID', Guard.allowEmployee, updateOrderShippingDetails);
 
 // review
 router.post('/api/review', Guard.allowCustomer, addNewReview);
