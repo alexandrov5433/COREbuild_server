@@ -14,13 +14,14 @@ export default async function getFilteredOrders(req: Request, res: Response) {
             shipping_status: {
                 pending: 'pending',
                 shipped: 'shipped'
-            }[queryParams?.shipping_status as any] || null,
-            timeAscending: Boolean(queryParams?.timeAscending) || false,
-            timeDescending: Boolean(queryParams?.timeDescending) || true,
+            }[queryParams?.shipping_status as any || ''] || null,
+            time: {
+                ascending: 'ascending',
+                descending: 'descending'
+            }[queryParams?.time as any || ''] || null,
             currentPage: Number(queryParams?.currentPage) || 1,
             itemsPerPage: Number(queryParams?.itemsPerPage) || 5,
         };
-        
         
         const results = await getFilteredOrdersFromDB(filtrationOptions);
         if (!results) {

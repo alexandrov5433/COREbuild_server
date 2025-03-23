@@ -142,13 +142,12 @@ export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltration
         }
 
         // sort
-        if (filtrationOptions.timeAscending) {
-            payload.sort((a, b) => a.placement_time - b.placement_time);
+        if (filtrationOptions.time == 'ascending') {
+            payload.sort((a, b) => Number(a.placement_time) - Number(b.placement_time));
         }
-        if (filtrationOptions.timeDescending) {
-            payload.sort((a, b) => b.placement_time - a.placement_time);
+        if (filtrationOptions.time == 'descending') {
+            payload.sort((a, b) => Number(b.placement_time) - Number(a.placement_time));
         }
-   
         
         const pagesCount = Math.ceil(payload.length / itemsPerPage);
         if (currentPage > pagesCount) {

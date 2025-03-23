@@ -115,8 +115,7 @@ export type OrderFiltrationOptions = {
     orderID: number | null,
     recipientID: number | null,
     shipping_status: 'pending' | 'shipped' | null,
-    timeAscending: boolean,
-    timeDescending: boolean,
+    time: 'ascending' | 'descending' | null,
     currentPage: number,
     itemsPerPage: number
 };
