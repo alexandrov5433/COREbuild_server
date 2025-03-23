@@ -7,8 +7,6 @@ import url from 'node:url';
 export default async function getFilteredOrders(req: Request, res: Response) {
     try {
         const queryParams = url.parse(req.url, true)?.query;
-        console.log(queryParams);
-        
         const filtrationOptions: OrderFiltrationOptions = 
         {
             orderID: Number(queryParams?.orderID) || null,
