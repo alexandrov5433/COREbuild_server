@@ -42,11 +42,14 @@ export async function checkEmailTaken(email: string) {
     }
 }
 
-export async function findUserByUserID(userID: number) {
+export async function findUserByUserID(userID: number): Promise<UserData | null> {
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE ("userID"=${userID})`)
-        return res;
+        if (res.rows[0].userID) {
+            return res.rows[0];
+        }
+        return null;
     } catch (e) {
         logger.error(e.message, e);
         return null;
