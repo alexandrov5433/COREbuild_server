@@ -74,7 +74,7 @@ router.get('/api/product-reviews', getReviews);
 router.get('/api/customer-reviewed-product/:productID', getCustomerReviewedProduct);
 
 router.all('*', (req: Request, res: Response) => {
-    res.redirect('/index.html');
+    res.redirect('/');
     res.end();
 });
 
