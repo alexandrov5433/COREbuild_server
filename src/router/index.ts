@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 
 import Guard from "../util/routeGuard.js";
 
@@ -30,6 +30,7 @@ import updateProductSpecsDoc from "../handlers/product/updateProductSpecsDoc.js"
 import getFilteredOrders from "../handlers/order/getFilteredOrders.js";
 import getUserData from "../handlers/user/getUserData.js";
 import updateOrderShippingDetails from "../handlers/order/updateOrderShippingDetails.js";
+import appServer from "../handlers/appServer.js";
 
 const router = Router();
 
@@ -73,10 +74,7 @@ router.get('/api/rating-and-review-count/:productID', getRatingAndReviewCount);
 router.get('/api/product-reviews', getReviews);
 router.get('/api/customer-reviewed-product/:productID', getCustomerReviewedProduct);
 
-router.all('*', (req: Request, res: Response) => {
-    res.redirect('/');
-    res.end();
-});
+router.all('*', appServer);
 
 export {
     router

@@ -28,6 +28,7 @@ import updateProductSpecsDoc from "../handlers/product/updateProductSpecsDoc.js"
 import getFilteredOrders from "../handlers/order/getFilteredOrders.js";
 import getUserData from "../handlers/user/getUserData.js";
 import updateOrderShippingDetails from "../handlers/order/updateOrderShippingDetails.js";
+import appServer from "../handlers/appServer.js";
 const router = Router();
 // user
 router.post('/api/login', Guard.allowGuest, login);
@@ -63,9 +64,6 @@ router.post('/api/review', Guard.allowCustomer, addNewReview);
 router.get('/api/rating-and-review-count/:productID', getRatingAndReviewCount);
 router.get('/api/product-reviews', getReviews);
 router.get('/api/customer-reviewed-product/:productID', getCustomerReviewedProduct);
-router.all('*', (req, res) => {
-    res.redirect('/index.html');
-    res.end();
-});
+router.all('*', appServer);
 export { router };
 //# sourceMappingURL=index.js.map
