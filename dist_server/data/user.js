@@ -49,7 +49,10 @@ export async function findUserByUserID(userID) {
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE ("userID"=${userID})`);
-        return res;
+        if (res.rows[0].userID) {
+            return res.rows[0];
+        }
+        return null;
     }
     catch (e) {
         logger.error(e.message, e);

@@ -6,25 +6,24 @@ export default async function validateCookie(req, res) {
             throw new Error('No cookie was provided.');
         }
         if (sessionCookie.userID) {
-            const dbResponse = await findUserByUserID(Number(sessionCookie.userID) || 0);
-            if (dbResponse?.rows[0].userID != sessionCookie.userID) {
+            const userData = await findUserByUserID(Number(sessionCookie.userID) || 0);
+            if (userData?.userID != Number(sessionCookie.userID)) {
                 throw new Error('Invalid cookie.');
             }
-            if (dbResponse?.rows[0].is_employee != sessionCookie.is_employee) {
+            if (userData?.is_employee != sessionCookie.is_employee) {
                 throw new Error('Invalid cookie.');
             }
             res.status(200);
             res.json({
                 msg: `Session is valid.`,
                 payload: {
-                    userID: dbResponse?.rows[0].userID,
-                    is_employee: dbResponse?.rows[0].is_employee,
-                    username: dbResponse?.rows[0].username,
-                    email: dbResponse?.rows[0].email || null,
-                    firstname: dbResponse?.rows[0].firstname || null,
-                    lastname: dbResponse?.rows[0].lastname || null,
-                    prefered_payment_method: dbResponse?.rows[0].prefered_payment_method || null,
-                    address: dbResponse?.rows[0].address || null
+                    userID: userData?.userID,
+                    is_employee: userData?.is_employee,
+                    username: userData?.username,
+                    email: userData?.email || null,
+                    firstname: userData?.firstname || null,
+                    lastname: userData?.lastname || null,
+                    address: userData?.address || null
                 }
             });
             res.end();

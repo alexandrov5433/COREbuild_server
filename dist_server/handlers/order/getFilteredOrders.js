@@ -9,12 +9,14 @@ export default async function getFilteredOrders(req, res) {
             recipientID: Number(queryParams?.recipientID) || null,
             shipping_status: {
                 pending: 'pending',
-                shipped: 'shipped'
-            }[queryParams?.shipping_status] || null,
-            timeAscending: Boolean(queryParams?.timeAscending) || false,
-            timeDescending: Boolean(queryParams?.timeDescending) || true,
+                sent: 'sent'
+            }[queryParams?.shipping_status || ''] || null,
+            time: {
+                ascending: 'ascending',
+                descending: 'descending'
+            }[queryParams?.time || ''] || null,
             currentPage: Number(queryParams?.currentPage) || 1,
-            itemsPerPage: Number(queryParams?.itemsPerPage) || 5,
+            itemsPerPage: Number(queryParams?.itemsPerPage) || 4,
         };
         const results = await getFilteredOrdersFromDB(filtrationOptions);
         if (!results) {

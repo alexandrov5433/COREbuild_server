@@ -125,11 +125,30 @@ export async function getOrderByID(paypal_order_id) {
         client.release();
     }
 }
+export async function getOrderByOrderID(orderID) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            SELECT * FROM "order" WHERE "id"=$1;
+        `, [orderID]);
+        if (res.rows[0].id) {
+            return res.rows[0];
+        }
+        return null;
+    }
+    catch (e) {
+        logger.error(e.message, e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
 export async function getFilteredOrdersFromDB(filtrationOptions) {
     const client = await pool.connect();
     try {
         let currentPage = filtrationOptions.currentPage || 1;
-        const itemsPerPage = filtrationOptions.itemsPerPage || 5;
+        const itemsPerPage = filtrationOptions.itemsPerPage || 4;
         const res = await client.query(`SELECT * FROM "order";`);
         let payload = res.rows;
         // filter
@@ -143,11 +162,11 @@ export async function getFilteredOrdersFromDB(filtrationOptions) {
             payload = payload.filter(order => order.shipping_status == filtrationOptions.shipping_status);
         }
         // sort
-        if (filtrationOptions.timeAscending) {
-            payload.sort((a, b) => a.placement_time - b.placement_time);
+        if (filtrationOptions.time == 'ascending') {
+            payload.sort((a, b) => Number(a.placement_time) - Number(b.placement_time));
         }
-        if (filtrationOptions.timeDescending) {
-            payload.sort((a, b) => b.placement_time - a.placement_time);
+        if (filtrationOptions.time == 'descending') {
+            payload.sort((a, b) => Number(b.placement_time) - Number(a.placement_time));
         }
         const pagesCount = Math.ceil(payload.length / itemsPerPage);
         if (currentPage > pagesCount) {
@@ -157,8 +176,32 @@ export async function getFilteredOrdersFromDB(filtrationOptions) {
         return {
             pagesCount,
             currentPage,
-            products: currentPagePortion
+            orders: currentPagePortion
         };
+    }
+    catch (e) {
+        logger.error(e.message, e);
+        return null;
+    }
+    finally {
+        client.release();
+    }
+}
+export async function updateOrderShippingDetailsInDB(orderID, newShippingData) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE "order" SET 
+                "shipping_status"=$2,
+                "shipping_speditor"=$3,
+                "shipment_tracking_code"=$4 
+            WHERE "id"=$1
+            RETURNING *;
+        `, [orderID, newShippingData.shipping_status, newShippingData.shipping_speditor, newShippingData.shipment_tracking_code]);
+        if (res.rows[0].id) {
+            return res.rows[0];
+        }
+        return null;
     }
     catch (e) {
         logger.error(e.message, e);

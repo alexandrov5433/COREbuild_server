@@ -109,18 +109,22 @@ function validateEmployeeData(registerData) {
     return {
         username: {
             valid: usernameValid,
+            touched: true,
             msg: `${usernameValid ? '' : 'The username can be maximum 30 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         password: {
             valid: passwordValid,
+            touched: true,
             msg: `${passwordValid ? '' : 'The password can be beween 5 and 50 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         repeat_password: {
             valid: repeat_passwordValid,
+            touched: true,
             msg: `${repeat_passwordValid ? '' : 'Both passwords must match.'}`
         },
         authentication_code: {
             valid: authentication_codeValid,
+            touched: true,
             msg: `${authentication_codeValid ? '' : 'Invalid employee authentication code.'}`
         }
     };
@@ -136,30 +140,37 @@ function validateCustomerData(registerData) {
     return {
         username: {
             valid: usernameValid,
+            touched: true,
             msg: `${usernameValid ? '' : 'The username can be maximum 30 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         password: {
             valid: passwordValid,
+            touched: true,
             msg: `${passwordValid ? '' : 'The password can be beween 5 and 50 characters long and may include letters, numbers and the following symbols: @-_+?!'}`
         },
         repeat_password: {
             valid: repeat_passwordValid,
+            touched: true,
             msg: `${repeat_passwordValid ? '' : 'Both passwords must match.'}`
         },
         email: {
             valid: emailValid,
+            touched: true,
             msg: `${emailValid ? '' : 'Please enter a valid email like: example123@some.com, example123!?_-@so23me.com.gov'}`
         },
         firstname: {
             valid: firstnameValid,
+            touched: true,
             msg: `${firstnameValid ? '' : 'First name must be between 1 and 50 characters long and may only include letters.'}`
         },
         lastname: {
             valid: lastnameValid,
+            touched: true,
             msg: `${lastnameValid ? '' : 'Last name must be between 1 and 50 characters long and may only include letters.'}`
         },
         address: {
             valid: addressValid,
+            touched: true,
             msg: `${addressValid ? '' : 'Please enter a postal address. Example: "Some-Str. 34a, 23456, Some City"'}`
         }
     };

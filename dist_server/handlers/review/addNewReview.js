@@ -30,7 +30,7 @@ export default async function addNewReview(req, res) {
             return;
         }
         const userData = await findUserByUserID(userID);
-        if (!userData || userData?.rows[0]?.is_employee) {
+        if (!userData || userData?.is_employee) {
             res.status(400);
             res.json({
                 msg: 'Reviewer must be a customer user.'
