@@ -140,13 +140,18 @@ export async function getOrderByOrderID(orderID: number): Promise<OrderData | nu
     }
 }
 
-export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltrationOptions) {
+export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltrationOptions, queryingUserID: number, is_employee: boolean) {
     const client = await pool.connect();
     try {
         let currentPage = filtrationOptions.currentPage || 1;
         const itemsPerPage = filtrationOptions.itemsPerPage || 4;
-        const res = await client.query(`SELECT * FROM "order";`);
-        let payload: Array<OrderData> = res.rows;
+        let res: any;
+        if (is_employee) {
+            res = await client.query(`SELECT * FROM "order";`);
+        } else {
+            res = await client.query(`SELECT * FROM "order" WHERE "recipient"=$1;`, [queryingUserID]);
+        }
+        let payload: Array<OrderData> = res?.rows;
 
         // filter
         if (filtrationOptions.orderID) {

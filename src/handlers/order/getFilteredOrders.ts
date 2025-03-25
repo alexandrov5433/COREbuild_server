@@ -7,7 +7,7 @@ import url from 'node:url';
 export default async function getFilteredOrders(req: Request, res: Response) {
     try {
         const queryParams = url.parse(req.url, true)?.query;
-        const filtrationOptions: OrderFiltrationOptions = 
+        const filtrationOptions: OrderFiltrationOptions =
         {
             orderID: Number(queryParams?.orderID) || null,
             recipientID: Number(queryParams?.recipientID) || null,
@@ -22,8 +22,12 @@ export default async function getFilteredOrders(req: Request, res: Response) {
             currentPage: Number(queryParams?.currentPage) || 1,
             itemsPerPage: Number(queryParams?.itemsPerPage) || 4,
         };
-        
-        const results = await getFilteredOrdersFromDB(filtrationOptions);
+        const userID = req.cookies.userSession?.userID;
+        const is_employee = req.cookies.userSession?.is_employee;
+        if (!userID) {
+            throw new Error('Missing userID.');
+        }
+        const results = await getFilteredOrdersFromDB(filtrationOptions, userID, is_employee);
         if (!results) {
             throw new Error('Could not get filtered orders.');
         }
