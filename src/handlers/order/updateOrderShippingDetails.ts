@@ -27,8 +27,6 @@ export default async function updateOrderShippingDetails(req: Request, res: Resp
         if (!orderData) {
             throw new Error(`Could not find order with ID: ${orderID}.`);
         }
-        console.log(newShippingData);
-        
         const updatedOrder = await updateOrderShippingDetailsInDB(orderID, newShippingData);
         if (!updatedOrder) {
             throw new Error('Could not update order.');
