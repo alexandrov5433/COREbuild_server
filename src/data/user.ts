@@ -58,10 +58,10 @@ export async function findUserByUserID(userID: number): Promise<UserData | null>
     }
 }
 
-export async function addNewCustomer(registerData: RegsiterData) {
+export async function addNewCustomer(registerData: RegsiterData): Promise<UserData | null> {
     const client = await pool.connect();
     try {
-        return await client.query(`
+        const res = await client.query(`
             INSERT INTO "user" VALUES(
                 DEFAULT,
                 ${false},
@@ -75,6 +75,10 @@ export async function addNewCustomer(registerData: RegsiterData) {
                 DEFAULT)
             RETURNING *
             `);
+        if (res?.rows[0]?.userID) {
+            return res?.rows[0];
+        }
+        return null;
     } catch (e) {
         logger.error(e.message, e);
         return null;
@@ -83,10 +87,10 @@ export async function addNewCustomer(registerData: RegsiterData) {
     }
 }
 
-export async function addNewEmployee(registerData: RegsiterData) {
+export async function addNewEmployee(registerData: RegsiterData): Promise<UserData | null> {
     const client = await pool.connect();
     try {
-        return await client.query(`
+        const res = await client.query(`
             INSERT INTO "user" VALUES(
                 DEFAULT,
                 ${true},
@@ -100,6 +104,10 @@ export async function addNewEmployee(registerData: RegsiterData) {
                 DEFAULT)
             RETURNING *
             `);
+        if (res?.rows[0]?.userID) {
+            return res?.rows[0];
+        }
+        return null;
     } catch (e) {
         logger.error(e.message, e);
         return null;

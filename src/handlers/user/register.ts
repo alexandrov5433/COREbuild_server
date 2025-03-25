@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { RegsiterData } from "../../data/definitions.js";
+import { RegsiterData, UserData } from "../../data/definitions.js";
 import bcrypt from "bcryptjs";
 import { addNewCustomer, addNewEmployee, checkEmailTaken, checkUsernameTaken } from "../../data/user.js";
 import { QueryResult } from "pg";
 import { createJWT } from "../../util/jwt.js";
 import logger from "../../config/winston.js";
+import { createFavorite } from "../../data/favorite.js";
 
 const HASH_SALT_ROUNDS = Number(process.env.HASH_SALT_ROUNDS) || 10;
 const EMPLOYEE_AUTH_CODE = process.env.EMPLOYEE_AUTH_CODE;
@@ -23,7 +24,7 @@ export default async function register(req: Request, res: Response) {
             stayLoggedIn: req.body.stayLoggedIn || null,
             authentication_code: req.body.authentication_code || null
         };
-        let dbResponse: QueryResult<any> | null = null;
+        let userData: UserData | null = null;
         if (registerData.is_employee) {
             const isUsernameTaken = await checkUsernameTaken(registerData.username);
             if (isUsernameTaken == true) {
@@ -37,7 +38,7 @@ export default async function register(req: Request, res: Response) {
             const validationObject = validateEmployeeData(registerData);
             if (isInformationValid(validationObject)) {
                 registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
-                dbResponse = await addNewEmployee(registerData);
+                userData = await addNewEmployee(registerData);
             } else {
                 res.status(400);
                 res.json({
@@ -63,7 +64,7 @@ export default async function register(req: Request, res: Response) {
             const validationObject = validateCustomerData(registerData);
             if (isInformationValid(validationObject)) {
                 registerData.password = await bcrypt.hash(registerData.password!, HASH_SALT_ROUNDS);
-                dbResponse = await addNewCustomer(registerData);
+                userData = await addNewCustomer(registerData);
             } else {
                 res.status(400);
                 res.json({
@@ -74,7 +75,16 @@ export default async function register(req: Request, res: Response) {
                 return;
             }
         }
-        const jwt = await createJWT({ userID: dbResponse?.rows[0].userID, is_employee: dbResponse?.rows[0].is_employee });
+        if (!userData) {
+            res.status(403);
+            res.json({
+                msg: 'Could not create new user.',
+            });
+            res.end();
+            return;
+        }
+        await createFavorite(userData.userID);
+        const jwt = await createJWT({ userID: userData?.userID, is_employee: userData?.is_employee });
         // 1 Year = 31,556,952 Seconds
         const cookieMaxAge = registerData.stayLoggedIn ? ' Max-Age=31556952;' : '';
 
@@ -83,17 +93,17 @@ export default async function register(req: Request, res: Response) {
         res.json({
             msg: 'Registration successful.',
             payload: {
-                userID: dbResponse?.rows[0].userID,
-                is_employee: dbResponse?.rows[0].is_employee,
-                username: dbResponse?.rows[0].username,
-                email: dbResponse?.rows[0].email || null,
-                firstname: dbResponse?.rows[0].firstname || null,
-                lastname: dbResponse?.rows[0].lastname || null,
-                address: dbResponse?.rows[0].address || null
+                userID: userData?.userID,
+                is_employee: userData?.is_employee,
+                username: userData?.username,
+                email: userData?.email || null,
+                firstname: userData?.firstname || null,
+                lastname: userData?.lastname || null,
+                address: userData?.address || null
             }
         });
         res.end();
-        logger.info(`New user registered.`, dbResponse?.rows[0]);
+        logger.info(`New user registered.`, userData);
     } catch (e) {
         logger.error(e.message, e);
         res.status(500);

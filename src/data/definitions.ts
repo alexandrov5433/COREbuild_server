@@ -123,3 +123,9 @@ export type OrderFiltrationOptions = {
 export type ShoppingCartData = {
     [key: number]: number
 }
+
+export type FavoriteData = {
+    id: number,
+    userID: number,
+    products: Array<number>
+}

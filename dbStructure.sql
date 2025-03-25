@@ -7,13 +7,14 @@
     "firstname" varchar(200) DEFAULT NULL,
     "lastname" varchar(200) DEFAULT NULL,
     "address" varchar(200) DEFAULT NULL,
-    "favorite_products" int[] DEFAULT array[]::int[],
     "shopping_cart" JSONB DEFAULT '{}'
 );
 ALTER TABLE "user" ADD COLUMN "shopping_cart" JSONB DEFAULT NULL;
 ALTER TABLE "user" ALTER COLUMN "shopping_cart" SET DEFAULT '{}';
 ALTER TABLE "user" DROP COLUMN "past_purchases";
 ALTER TABLE "user" DROP COLUMN "prefered_payment_method";
+ALTER TABLE "user" DROP COLUMN "favorite_products";
+ALTER TABLE "user" ADD COLUMN "favorite_products" int REFERENCES "favorite" ("id") DEFAULT NULL;
 
 CREATE TABLE "product" (
     "productID" SERIAL PRIMARY KEY,
@@ -71,5 +72,11 @@ ALTER TABLE "order" ADD COLUMN "total_price" int NOT NULL;
 ALTER TABLE "order" ADD COLUMN "paypal_order_id" text NOT NULL;
 ALTER TABLE "order" ADD COLUMN "shipping_speditor" text DEFAULT NULL;
 ALTER TABLE "order" ADD COLUMN "shipment_tracking_code" text DEFAULT NULL;
+
+CREATE TABLE "favorite" (
+    "id" SERIAL PRIMARY KEY,
+    "userID" int NOT NULL REFERENCES "user" ("userID"),
+    "products" int[] DEFAULT array[]::int[]
+)
 
 DROP TABLE IF EXISTS "user", "product", "review", "file", "category" CASCADE;

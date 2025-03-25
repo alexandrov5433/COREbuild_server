@@ -31,6 +31,10 @@ import getFilteredOrders from "../handlers/order/getFilteredOrders.js";
 import getUserData from "../handlers/user/getUserData.js";
 import updateOrderShippingDetails from "../handlers/order/updateOrderShippingDetails.js";
 import appServer from "../handlers/appServer.js";
+import addNewProductToFavorite from "../handlers/favorite/addNewProductToFavorite.js";
+import deleteProductFromFavorite from "../handlers/favorite/deleteProductFromFavorite.js";
+import clearAllProductsFromFavorite from "../handlers/favorite/clearAllProductsFromFavorite.js";
+import getFavorite from "../handlers/favorite/getFavorite.js";
 
 const router = Router();
 
@@ -73,6 +77,12 @@ router.post('/api/review', Guard.allowCustomer, addNewReview);
 router.get('/api/rating-and-review-count/:productID', getRatingAndReviewCount);
 router.get('/api/product-reviews', getReviews);
 router.get('/api/customer-reviewed-product/:productID', getCustomerReviewedProduct);
+
+// favorite
+router.post('/api/favorite/:userID/:productID', Guard.allowCustomer, addNewProductToFavorite);
+router.delete('/api/favorite/:userID/:productID', Guard.allowCustomer, deleteProductFromFavorite);
+router.put('/api/favorite/:userID', Guard.allowCustomer, clearAllProductsFromFavorite);
+router.get('/api/favorite/:userID', Guard.allowCustomer, getFavorite);
 
 router.all('*', appServer);
 
