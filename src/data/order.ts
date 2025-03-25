@@ -46,7 +46,7 @@ export async function addNewOrder(orderData: OrderData) {
     }
 }
 
-export async function setOrderPaymentStatusToPaid(paypal_order_id: string) {
+export async function setOrderPaymentStatusToPaid(paypal_order_id: string): Promise<OrderData | null> {
     const client = await pool.connect();
     try {
         const res = await client.query(`
@@ -54,9 +54,9 @@ export async function setOrderPaymentStatusToPaid(paypal_order_id: string) {
         `, [paypal_order_id]);
         const updatedOrder = res.rows[0] || null;
         if (updatedOrder && updatedOrder.id) {
-            return true;
+            return updatedOrder;
         }
-        return `The payment status of order ID: ${paypal_order_id} could not be modified.`;
+        return null;
     } catch (e) {
         logger.error(e.message, e);
         return null;
