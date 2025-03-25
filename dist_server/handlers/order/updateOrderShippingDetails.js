@@ -14,6 +14,7 @@ export default async function updateOrderShippingDetails(req, res) {
             shipping_speditor: req.body.shipping_speditor || null,
             shipment_tracking_code: req.body.shipment_tracking_code || null
         };
+        console.log(newShippingData);
         if (!newShippingData.shipping_status) {
             throw new Error('Missing shipping status.');
         }
@@ -25,7 +26,6 @@ export default async function updateOrderShippingDetails(req, res) {
         if (!orderData) {
             throw new Error(`Could not find order with ID: ${orderID}.`);
         }
-        console.log(newShippingData);
         const updatedOrder = await updateOrderShippingDetailsInDB(orderID, newShippingData);
         if (!updatedOrder) {
             throw new Error('Could not update order.');

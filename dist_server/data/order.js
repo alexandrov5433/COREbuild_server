@@ -144,13 +144,19 @@ export async function getOrderByOrderID(orderID) {
         client.release();
     }
 }
-export async function getFilteredOrdersFromDB(filtrationOptions) {
+export async function getFilteredOrdersFromDB(filtrationOptions, queryingUserID, is_employee) {
     const client = await pool.connect();
     try {
         let currentPage = filtrationOptions.currentPage || 1;
         const itemsPerPage = filtrationOptions.itemsPerPage || 4;
-        const res = await client.query(`SELECT * FROM "order";`);
-        let payload = res.rows;
+        let res;
+        if (is_employee) {
+            res = await client.query(`SELECT * FROM "order";`);
+        }
+        else {
+            res = await client.query(`SELECT * FROM "order" WHERE "recipient"=$1;`, [queryingUserID]);
+        }
+        let payload = res?.rows;
         // filter
         if (filtrationOptions.orderID) {
             payload = payload.filter(order => order.id == filtrationOptions.orderID);
