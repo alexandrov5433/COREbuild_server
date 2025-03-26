@@ -35,6 +35,7 @@ import addNewProductToFavorite from "../handlers/favorite/addNewProductToFavorit
 import deleteProductFromFavorite from "../handlers/favorite/deleteProductFromFavorite.js";
 import clearAllProductsFromFavorite from "../handlers/favorite/clearAllProductsFromFavorite.js";
 import getFavorite from "../handlers/favorite/getFavorite.js";
+import editProfileDetails from "../handlers/user/editProfileDetails.js";
 
 const router = Router();
 
@@ -44,6 +45,7 @@ router.post('/api/register', Guard.allowGuest, register);
 router.get('/api/logout', Guard.allowUser, logout);
 router.get('/api/validate-cookie', validateCookie);
 router.get('/api/user-data/:userID', Guard.allowUser, getUserData);
+router.put('/api/profile-details/:userID', Guard.allowCustomer, editProfileDetails);
 
 // product
 router.post('/api/add-product', Guard.allowEmployee, addProduct);

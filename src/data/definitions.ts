@@ -129,3 +129,10 @@ export type FavoriteData = {
     userID: number,
     products: Array<number>
 }
+
+export type NewProfileDetails = {
+    email: string | null,
+    firstname: string | null,
+    lastname: string | null,
+    address: string | null,
+}

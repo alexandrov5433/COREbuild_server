@@ -1,5 +1,5 @@
 import { pool } from "./postgres.js";
-import { RegsiterData, UserData } from "./definitions.js";
+import { NewProfileDetails, RegsiterData, UserData } from "./definitions.js";
 import logger from "../config/winston.js";
 
 export async function findUserByUsername(username: string): Promise<UserData | null> {
@@ -108,6 +108,36 @@ export async function addNewEmployee(registerData: RegsiterData): Promise<UserDa
             return res?.rows[0];
         }
         return null;
+    } catch (e) {
+        logger.error(e.message, e);
+        return null;
+    } finally {
+        client.release();
+    }
+}
+
+export async function editProfileDetailsInDB(userID: number, newDetails: NewProfileDetails) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(`
+            UPDATE "user" SET
+                "email"=$2,
+                "firstname"=$3,
+                "lastname"=$4,
+                "address"=$5
+            WHERE "userID"=$1
+            RETURNING *;
+        `, [
+            userID,
+            newDetails.email,
+            newDetails.firstname,
+            newDetails.lastname,
+            newDetails.address,
+        ]);        
+        if (res?.rows[0].userID) {
+            return res.rows[0];
+        }
+        return null
     } catch (e) {
         logger.error(e.message, e);
         return null;
