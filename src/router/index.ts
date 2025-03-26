@@ -37,6 +37,7 @@ import clearAllProductsFromFavorite from "../handlers/favorite/clearAllProductsF
 import getFavorite from "../handlers/favorite/getFavorite.js";
 import editProfileDetails from "../handlers/user/editProfileDetails.js";
 import changePassword from "../handlers/user/changePassword.js";
+import getProductDataInBulk from "../handlers/product/getProductDataInBulk.js";
 
 const router = Router();
 
@@ -60,6 +61,7 @@ router.post('/api/add-product-pictures/:productID', Guard.allowEmployee, addProd
 router.delete('/api/delete-product-picture/:productID/:pictureToDeleteID', Guard.allowEmployee, deletePictureOfProdcut);
 router.delete('/api/delete-product-document/:productID/:specsDocToDeleteID', Guard.allowEmployee, deleteProductSpecsDoc);
 router.put('/api/update-product-document/:productID', Guard.allowEmployee, updateProductSpecsDoc);
+router.post('/api/product-data-bulk', getProductDataInBulk);
 
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);
