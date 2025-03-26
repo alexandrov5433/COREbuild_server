@@ -36,6 +36,7 @@ import deleteProductFromFavorite from "../handlers/favorite/deleteProductFromFav
 import clearAllProductsFromFavorite from "../handlers/favorite/clearAllProductsFromFavorite.js";
 import getFavorite from "../handlers/favorite/getFavorite.js";
 import editProfileDetails from "../handlers/user/editProfileDetails.js";
+import changePassword from "../handlers/user/changePassword.js";
 
 const router = Router();
 
@@ -46,6 +47,7 @@ router.get('/api/logout', Guard.allowUser, logout);
 router.get('/api/validate-cookie', validateCookie);
 router.get('/api/user-data/:userID', Guard.allowUser, getUserData);
 router.put('/api/profile-details/:userID', Guard.allowCustomer, editProfileDetails);
+router.put('/api/password/:userID', Guard.allowUser, changePassword);
 
 // product
 router.post('/api/add-product', Guard.allowEmployee, addProduct);

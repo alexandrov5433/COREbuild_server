@@ -136,3 +136,8 @@ export type NewProfileDetails = {
     lastname: string | null,
     address: string | null,
 }
+
+export type NewPasswordDetails = {
+    currentPassword: string | null,
+    newPassword: string | null
+}
