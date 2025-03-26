@@ -20,7 +20,7 @@ export default async function login(req: Request, res: Response) {
             if (!isPasswordCorrect) {
                 throw new Error('False login credentials.');
             }
-            const jwt = await createJWT({ userID: userData.userID.toString(), is_employee: userData.is_employee });
+            const jwt = await createJWT({ userID: userData.userID, is_employee: userData.is_employee });
             const cookieMaxAge = bodyData.stayLoggedIn ? ' Max-Age=31556952;' : '';
             res.status(200);
             res.setHeader('Set-Cookie', `session=${jwt};${cookieMaxAge} Path=/; HttpOnly; Secure;`);
