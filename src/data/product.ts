@@ -4,26 +4,40 @@ import { ProductCreationData, ProductData, ProductInfosEditingData, ProductsCata
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 
-export async function createProduct(productData: ProductCreationData) {
+export async function createProduct(productData: ProductCreationData): Promise<ProductData | null> {
     const client = await pool.connect();
     try {
         const specsDocIDVal = productData.specsDocID || 'DEFAULT';
-        const picturesVal = productData.pictures ? `'{${productData.pictures.join(', ')}}'` : 'DEFAULT';
-        return await client.query(`
+        const picturesVal = productData.pictures.length ? productData.pictures : 'DEFAULT';
+        const res = await client.query(`
             INSERT INTO "product" VALUES(
                 DEFAULT,
-                '${productData.name}',
-                '${productData.description}',
-                ${productData.categoryID},
-                ${productData.price},
-                ${productData.stockCount},
-                '${productData.manufacturer}',
-                ${specsDocIDVal},
-                ${productData.thumbnailID},
-                ${picturesVal},
+                $1,
+                $2,
+                $3,
+                $4,
+                $5,
+                $6,
+                $7,
+                $8,
+                $9
                 )
             RETURNING *
-            `)
+            `, [
+                productData.name,
+                productData.description,
+                productData.categoryID,
+                productData.price,
+                productData.stockCount,
+                productData.manufacturer,
+                specsDocIDVal,
+                productData.thumbnailID,
+                picturesVal 
+            ]);
+        if (res?.rows[0].productID) {
+            return res?.rows[0];
+        }
+        return null;
     } catch (e) {
         logger.error(e.message, e);
         return null;
