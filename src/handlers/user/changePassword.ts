@@ -25,7 +25,9 @@ export default async function changePassword(req: Request, res: Response) {
         if (!userData) {
             throw new Error(`Could not find user with ID: ${userID}.`);
         }
-
+        if (newPasswordDetails.currentPassword === newPasswordDetails.newPassword) {
+            throw new Error('The new password can not be the same as the current one.');
+        }
         const isCurrentPasswordCorrect = await bcrypt.compare(newPasswordDetails.currentPassword, userData.password);
         if (!isCurrentPasswordCorrect) {
             throw new Error('Invalid current password.');
