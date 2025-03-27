@@ -29,6 +29,13 @@ import getFilteredOrders from "../handlers/order/getFilteredOrders.js";
 import getUserData from "../handlers/user/getUserData.js";
 import updateOrderShippingDetails from "../handlers/order/updateOrderShippingDetails.js";
 import appServer from "../handlers/appServer.js";
+import addNewProductToFavorite from "../handlers/favorite/addNewProductToFavorite.js";
+import deleteProductFromFavorite from "../handlers/favorite/deleteProductFromFavorite.js";
+import clearAllProductsFromFavorite from "../handlers/favorite/clearAllProductsFromFavorite.js";
+import getFavorite from "../handlers/favorite/getFavorite.js";
+import editProfileDetails from "../handlers/user/editProfileDetails.js";
+import changePassword from "../handlers/user/changePassword.js";
+import getProductDataInBulk from "../handlers/product/getProductDataInBulk.js";
 const router = Router();
 // user
 router.post('/api/login', Guard.allowGuest, login);
@@ -36,6 +43,8 @@ router.post('/api/register', Guard.allowGuest, register);
 router.get('/api/logout', Guard.allowUser, logout);
 router.get('/api/validate-cookie', validateCookie);
 router.get('/api/user-data/:userID', Guard.allowUser, getUserData);
+router.put('/api/profile-details/:userID', Guard.allowCustomer, editProfileDetails);
+router.put('/api/password/:userID', Guard.allowUser, changePassword);
 // product
 router.post('/api/add-product', Guard.allowEmployee, addProduct);
 router.get('/api/product-details/:productID', productDetails);
@@ -47,6 +56,7 @@ router.post('/api/add-product-pictures/:productID', Guard.allowEmployee, addProd
 router.delete('/api/delete-product-picture/:productID/:pictureToDeleteID', Guard.allowEmployee, deletePictureOfProdcut);
 router.delete('/api/delete-product-document/:productID/:specsDocToDeleteID', Guard.allowEmployee, deleteProductSpecsDoc);
 router.put('/api/update-product-document/:productID', Guard.allowEmployee, updateProductSpecsDoc);
+router.post('/api/product-data-bulk', getProductDataInBulk);
 // file
 router.get('/api/file/:picOrDoc/:fileid', file);
 // shopping cart
@@ -64,6 +74,11 @@ router.post('/api/review', Guard.allowCustomer, addNewReview);
 router.get('/api/rating-and-review-count/:productID', getRatingAndReviewCount);
 router.get('/api/product-reviews', getReviews);
 router.get('/api/customer-reviewed-product/:productID', getCustomerReviewedProduct);
+// favorite
+router.post('/api/favorite/:userID/:productID', Guard.allowCustomer, addNewProductToFavorite);
+router.delete('/api/favorite/:userID/:productID', Guard.allowCustomer, deleteProductFromFavorite);
+router.put('/api/favorite/:userID', Guard.allowCustomer, clearAllProductsFromFavorite);
+router.get('/api/favorite/:userID', Guard.allowCustomer, getFavorite);
 router.all('*', appServer);
 export { router };
 //# sourceMappingURL=index.js.map

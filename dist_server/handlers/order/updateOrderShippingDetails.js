@@ -14,7 +14,6 @@ export default async function updateOrderShippingDetails(req, res) {
             shipping_speditor: req.body.shipping_speditor || null,
             shipment_tracking_code: req.body.shipment_tracking_code || null
         };
-        console.log(newShippingData);
         if (!newShippingData.shipping_status) {
             throw new Error('Missing shipping status.');
         }

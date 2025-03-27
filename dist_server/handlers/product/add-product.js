@@ -13,16 +13,11 @@ const PDF_SIZE_LIMIT_MB = Number(process.env.PDF_SIZE_LIMIT_MB) || 4;
 export default async function addProduct(req, res) {
     try {
         if (!req.files || Object.keys(req.files).length === 0) {
-            res.status(400)
-                .json({
-                msg: `No files were uploaded.`
-            })
-                .end();
-            return;
+            throw new Error('No files were uploaded.');
         }
         const productData = {
             name: req.body.name.trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
-            description: req.body.description.trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
+            description: req.body.description.trim() || null,
             category: reduceSpacesBetweenWordsToOne(req.body.category.toLowerCase().replaceAll(/[^A-Za-z ]/g, '')) || null,
             categoryID: null,
             price: Number(req.body.price),
@@ -36,138 +31,58 @@ export default async function addProduct(req, res) {
         const picturesFiles = req.files.pictures || null;
         const specsDocFile = req.files.specsDoc || null;
         if (!productData.name) {
-            res.status(400)
-                .json({
-                msg: `The product name is missing.`
-            })
-                .end();
-            return;
+            throw new Error('The product name is missing.');
         }
         if (!productData.description) {
-            res.status(400)
-                .json({
-                msg: `The product description is missing.`
-            })
-                .end();
-            return;
+            throw new Error('The product description is missing.');
         }
         if (!productData.category) {
-            res.status(400)
-                .json({
-                msg: `The product category is missing.`
-            })
-                .end();
-            return;
+            throw new Error('The product category is missing.');
         }
         if (!productData.price || productData.price <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price.toString())) {
-            res.status(400)
-                .json({
-                msg: `The price must be greater than 0. Please use a dot as a decimal separator. E.g.: '01.23', '23.03' or '0.01'.`
-            })
-                .end();
-            return;
+            throw new Error(`The price must be greater than 0. Please use a dot as a decimal separator. E.g.: '01.23', '23.03' or '0.01'.`);
         }
         if (Number.isNaN(productData.stockCount) || productData.stockCount < 0 || !Number.isInteger(productData.stockCount)) {
-            res.status(400)
-                .json({
-                msg: `The stock count must be 0 or greater and a whole number.`
-            })
-                .end();
-            return;
+            throw new Error('The stock count must be 0 or greater and a whole number.');
         }
         if (!productData.manufacturer) {
-            res.status(400)
-                .json({
-                msg: `The product manufacturer is missing.`
-            })
-                .end();
-            return;
+            throw new Error('he product manufacturer is missing.');
         }
         if (!thumbnailFile) {
-            res.status(400)
-                .json({
-                msg: `No thumbnail was submitted.`
-            })
-                .end();
-            return;
+            throw new Error('No thumbnail was submitted.');
         }
         else if (thumbnailFile.size > PICTURE_SIZE_LIMIT_MB * 1024 * 1024) {
-            res.status(400)
-                .json({
-                msg: `The thumbnail exceeds the size limit of ${PICTURE_SIZE_LIMIT_MB}MB.`
-            })
-                .end();
-            return;
+            throw new Error(`The thumbnail exceeds the size limit of ${PICTURE_SIZE_LIMIT_MB}MB.`);
         }
         else if (!['image/jpeg', 'image/png'].includes(thumbnailFile.mimetype)) {
-            res.status(400)
-                .json({
-                msg: `The thumbnail must be a PNG, JPG or JPEG file.`
-            })
-                .end();
-            return;
+            throw new Error('The thumbnail must be a PNG, JPG or JPEG file.');
         }
         if (picturesFiles) {
             if (picturesFiles instanceof Array) {
                 // case array of pictures
                 if (picturesFiles.find(p => p.size > PICTURE_SIZE_LIMIT_MB * 1024 * 1024)) {
-                    res.status(400)
-                        .json({
-                        msg: `One or more pictures exceed the size limit of ${PICTURE_SIZE_LIMIT_MB}MB.`
-                    })
-                        .end();
-                    return;
+                    throw new Error(`One or more pictures exceed the size limit of ${PICTURE_SIZE_LIMIT_MB}MB.`);
                 }
                 if (picturesFiles.length > MAX_PICTURE_COUNT) {
-                    res.status(400)
-                        .json({
-                        msg: `You may upload no more than ${MAX_PICTURE_COUNT} pictures.`
-                    })
-                        .end();
-                    return;
+                    throw new Error(`The pictures may not be more than ${MAX_PICTURE_COUNT}.`);
                 }
                 if (picturesFiles.find(p => !['image/jpeg', 'image/png'].includes(p.mimetype))) {
-                    res.status(400)
-                        .json({
-                        msg: `All pictures must be PNG, JPG or JPEG files.`
-                    })
-                        .end();
-                    return;
+                    throw new Error('All pictures must be PNG, JPG or JPEG files.');
                 }
             }
             else if (picturesFiles.size > PICTURE_SIZE_LIMIT_MB * 1024 * 1024) {
                 // case singe picture instanceof Object
-                res.status(400)
-                    .json({
-                    msg: `The picture exceeds the size limit of ${PICTURE_SIZE_LIMIT_MB}MB.`
-                })
-                    .end();
-                return;
+                throw new Error(`The picture exceeds the size limit of ${PICTURE_SIZE_LIMIT_MB}MB.`);
             }
             else if (!['image/jpeg', 'image/png'].includes(picturesFiles.mimetype)) {
-                res.status(400)
-                    .json({
-                    msg: `The picture must be a PNG, JPG or JPEG file.`
-                })
-                    .end();
-                return;
+                throw new Error('The picture must be a PNG, JPG or JPEG file.');
             }
         }
         if (specsDocFile && specsDocFile.size > PDF_SIZE_LIMIT_MB * 1024 * 1024) {
-            res.status(400)
-                .json({
-                msg: `The specifications document exceeds the size limit of ${PDF_SIZE_LIMIT_MB}MB.`
-            })
-                .end();
-            return;
+            throw new Error(`The specifications document exceeds the size limit of ${PDF_SIZE_LIMIT_MB}MB.`);
         }
         else if (specsDocFile && specsDocFile.mimetype !== 'application/pdf') {
-            res.status(400)
-                .json({
-                msg: `The specifications document must be a PDF file.`
-            })
-                .end();
-            return;
+            throw new Error('The specifications document must be a PDF file.');
         }
         const newThumbnailName = `${uuidv4()}---${thumbnailFile.name}`;
         thumbnailFile.name = newThumbnailName;
@@ -205,18 +120,21 @@ export default async function addProduct(req, res) {
         productData.price = Number(Number.parseFloat(`${productData.price}`).toFixed(2)) * 100; // converting to cent
         productData.categoryID = (await createCategory(productData.category))?.rows[0]?.categoryID;
         const newProduct = await createProduct(productData);
+        if (!newProduct) {
+            throw new Error('Could not create new product.');
+        }
         res.status(200)
             .json({
             msg: `New product added.`,
-            payload: newProduct?.rows[0]
+            payload: newProduct
         })
             .end();
     }
     catch (e) {
         logger.error(e.message, e);
-        res.status(500);
+        res.status(400);
         res.json({
-            msg: `Error: ${e.message}`
+            msg: e.message
         });
         res.end();
     }

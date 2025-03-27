@@ -53,9 +53,9 @@ export async function setOrderPaymentStatusToPaid(paypal_order_id) {
         `, [paypal_order_id]);
         const updatedOrder = res.rows[0] || null;
         if (updatedOrder && updatedOrder.id) {
-            return true;
+            return updatedOrder;
         }
-        return `The payment status of order ID: ${paypal_order_id} could not be modified.`;
+        return null;
     }
     catch (e) {
         logger.error(e.message, e);

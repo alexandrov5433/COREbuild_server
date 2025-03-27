@@ -30,18 +30,16 @@ export default async function collectPayment(req, res) {
         try {
             const { body } = await ordersController.ordersCapture(collect);
             const paypal_order_id = JSON.parse(body).id;
-            const orderIsPaid = await setOrderPaymentStatusToPaid(paypal_order_id);
-            if (typeof orderIsPaid == 'string') {
+            const updatedOrderData = await setOrderPaymentStatusToPaid(paypal_order_id);
+            if (!updatedOrderData) {
                 // order status could not be modified
                 res.status(400);
                 res.json({
-                    msg: orderIsPaid
+                    msg: `The payment status of order ID: ${paypal_order_id} could not be modified.`
                 });
                 res.end();
                 return;
             }
-            // Get more response info...
-            // const { statusCode, headers } = httpResponse;
             const userData = await emptyUserCart(userID);
             if (!userData) {
                 res.status(400);
@@ -55,7 +53,7 @@ export default async function collectPayment(req, res) {
             res.json({
                 msg: 'Order placed.',
                 payload: {
-                    paypal_order_id,
+                    updatedOrderData,
                     userData
                 }
             });
