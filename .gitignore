@@ -6,3 +6,5 @@ mock
 mock/*
 logs
 logs/*
+ssl_corebuild
+ssl_corebuild/*
