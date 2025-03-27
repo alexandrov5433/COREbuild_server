@@ -141,3 +141,39 @@ export type NewPasswordDetails = {
     currentPassword: string | null,
     newPassword: string | null
 }
+
+export type TicketData = {
+    id: number,
+    title: string,
+    status: 'open' | 'closed',
+    content_question: string,
+    content_answer: string | null,
+    time_open: number,
+    time_close: number | null,
+    email_for_answer: string,
+    userID_submit: number | null,
+    userID_employee: number | null
+}
+
+export type TicketCreationData = {
+    title: string,
+    content_question: string,
+    time_open: number,
+    email_for_answer: string,
+    userID_submit: number | null
+}
+
+export type TicketAnswerData = {
+    id: number,
+    content_answer: string,
+    time_close: number,
+    userID_employee: number
+}
+
+export type TicketFiltrationOptions = {
+    id: number | null,
+    status: 'open' | 'closed' | null,
+    time_open: 'ascending' | 'descending' | null,
+    currentPage: number,
+    itemsPerPage: number
+};

@@ -79,4 +79,22 @@ CREATE TABLE "favorite" (
     "products" int[] DEFAULT array[]::int[]
 )
 
+
+CREATE TYPE ticket_status_options AS ENUM ('open', 'closed');
+CREATE TABLE "ticket" (
+    "id" SERIAL PRIMARY KEY,
+    "title" text NOT NULL,
+    "status" ticket_status_options NOT NULL,
+    "content_question" text NOT NULL,
+    "content_answer" text DEFAULT NULL,
+    "time_open" int NOT NULL,
+    "time_close" int DEFAULT NULL,
+    "email_for_answer" text NOT NULL,
+    "userID_submit" int DEFAULT NULL REFERENCES "user"("userID"),
+    "userID_employee" int DEFAULT NULL REFERENCES "user"("userID")
+) 
+ALTER TABLE "ticket" ADD COLUMN "status" ticket_status_options NOT NULL;
+
+
+
 DROP TABLE IF EXISTS "user", "product", "review", "file", "category" CASCADE;
