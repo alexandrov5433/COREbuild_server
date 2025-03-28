@@ -27,6 +27,9 @@ export default async function answerTicket(req: Request, res: Response) {
             throw new Error('Could not submit answer for ticket.');
         }
         res.status(200);
+        res.json({
+            msg: 'Ticket answered.'
+        });
         res.end();
     } catch (e) {
         logger.error(e.message, e);
