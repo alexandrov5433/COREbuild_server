@@ -84,7 +84,9 @@ export default async function register(req: Request, res: Response) {
             res.end();
             return;
         }
-        await createFavorite(userData.userID);
+        if (!registerData.is_employee) {
+            await createFavorite(userData.userID);
+        }
         const jwt = await createJWT({ userID: userData?.userID, is_employee: userData?.is_employee });
         // 1 Year = 31,556,952 Seconds
         const cookieMaxAge = registerData.stayLoggedIn ? ' Max-Age=31556952;' : '';
@@ -105,11 +107,13 @@ export default async function register(req: Request, res: Response) {
         });
         res.end();
         logger.info(`New user registered.`, userData);
-        sendWelcomeMailOnRegister(
-            userData?.firstname || 'Customer',
-            userData?.lastname || '',
-            userData?.email
-        );
+        if (!registerData.is_employee) {
+            sendWelcomeMailOnRegister(
+                userData?.firstname || 'Customer',
+                userData?.lastname || '',
+                userData?.email
+            );
+        }
     } catch (e) {
         logger.error(e.message, e);
         res.status(500);
