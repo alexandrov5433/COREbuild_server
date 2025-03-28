@@ -69,16 +69,22 @@ export async function addNewCustomer(registerData) {
             INSERT INTO "user" VALUES(
                 DEFAULT,
                 ${false},
-                '${registerData.username}',
-                '${registerData.password}',
-                '${registerData.email}',
-                '${registerData.firstname}',
-                '${registerData.lastname}',
-                '${registerData.address}',
-                DEFAULT,
+                $1,
+                $2,
+                $3,
+                $4,
+                $5,
+                $6,
                 DEFAULT)
-            RETURNING *
-            `);
+            RETURNING *;
+            `, [
+            registerData.username,
+            registerData.password,
+            registerData.email,
+            registerData.firstname,
+            registerData.lastname,
+            registerData.address,
+        ]);
         if (res?.rows[0]?.userID) {
             return res?.rows[0];
         }

@@ -3,6 +3,7 @@ import { addNewCustomer, addNewEmployee, checkEmailTaken, checkUsernameTaken } f
 import { createJWT } from "../../util/jwt.js";
 import logger from "../../config/winston.js";
 import { createFavorite } from "../../data/favorite.js";
+import sendWelcomeMailOnRegister from "../../email/sendWelcomeMailOnRegister.js";
 const HASH_SALT_ROUNDS = Number(process.env.HASH_SALT_ROUNDS) || 10;
 const EMPLOYEE_AUTH_CODE = process.env.EMPLOYEE_AUTH_CODE;
 export default async function register(req, res) {
@@ -101,6 +102,7 @@ export default async function register(req, res) {
         });
         res.end();
         logger.info(`New user registered.`, userData);
+        sendWelcomeMailOnRegister(userData?.firstname || 'Customer', userData?.lastname || '', userData?.email);
     }
     catch (e) {
         logger.error(e.message, e);

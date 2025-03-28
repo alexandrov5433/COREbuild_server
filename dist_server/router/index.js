@@ -36,6 +36,9 @@ import getFavorite from "../handlers/favorite/getFavorite.js";
 import editProfileDetails from "../handlers/user/editProfileDetails.js";
 import changePassword from "../handlers/user/changePassword.js";
 import getProductDataInBulk from "../handlers/product/getProductDataInBulk.js";
+import submitTicket from "../handlers/ticket/submitTicket.js";
+import answerTicket from "../handlers/ticket/answerTicket.js";
+import getFilteredTickets from "../handlers/ticket/getFilteredTickets.js";
 const router = Router();
 // user
 router.post('/api/login', Guard.allowGuest, login);
@@ -79,6 +82,10 @@ router.post('/api/favorite/:userID/:productID', Guard.allowCustomer, addNewProdu
 router.delete('/api/favorite/:userID/:productID', Guard.allowCustomer, deleteProductFromFavorite);
 router.put('/api/favorite/:userID', Guard.allowCustomer, clearAllProductsFromFavorite);
 router.get('/api/favorite/:userID', Guard.allowCustomer, getFavorite);
+// ticket
+router.post('/api/ticket', submitTicket);
+router.post('/api/ticket-answer', Guard.allowEmployee, answerTicket);
+router.get('/api/ticket-filter', Guard.allowEmployee, getFilteredTickets);
 router.all('*', appServer);
 export { router };
 //# sourceMappingURL=index.js.map

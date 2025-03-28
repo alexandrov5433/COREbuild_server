@@ -3,6 +3,7 @@ import { ApiError } from "@paypal/paypal-server-sdk";
 import { setOrderPaymentStatusToPaid } from "../../data/order.js";
 import { emptyUserCart } from "../../data/cart.js";
 import logger from "../../config/winston.js";
+import sendOrderEmail from "../../email/sendOrderEmail.js";
 export default async function collectPayment(req, res) {
     try {
         const paypalOrderID = req.params.paypalOrderID || null;
@@ -58,6 +59,7 @@ export default async function collectPayment(req, res) {
                 }
             });
             res.end();
+            sendOrderEmail(paypal_order_id);
         }
         catch (error) {
             if (error instanceof ApiError) {
