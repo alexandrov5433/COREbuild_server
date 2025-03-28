@@ -87,14 +87,15 @@ CREATE TABLE "ticket" (
     "status" ticket_status_options NOT NULL,
     "content_question" text NOT NULL,
     "content_answer" text DEFAULT NULL,
-    "time_open" int NOT NULL,
-    "time_close" int DEFAULT NULL,
+    "time_open" bigint NOT NULL,
+    "time_close" bigint DEFAULT NULL,
     "email_for_answer" text NOT NULL,
     "userID_submit" int DEFAULT NULL REFERENCES "user"("userID"),
     "userID_employee" int DEFAULT NULL REFERENCES "user"("userID")
 ) 
 ALTER TABLE "ticket" ADD COLUMN "status" ticket_status_options NOT NULL;
-
+ALTER TABLE "ticket" ALTER COLUMN "time_open" TYPE bigint NOT NULL;
+ALTER TABLE "ticket" ALTER COLUMN "time_close" TYPE bigint DEFAULT NULL;
 
 
 DROP TABLE IF EXISTS "user", "product", "review", "file", "category" CASCADE;
