@@ -7,7 +7,6 @@ export type UserData = {
     firstname: string | null,
     lastname: string | null,
     address: string | null,
-    favorite_products: Array<number>,
     shopping_cart: ShoppingCartData
 }
 
