@@ -7,10 +7,10 @@ export default async function submitTicket(req: Request, res: Response) {
     try {
         const userID = Number(req.cookies?.userSession?.userID) || null;
         const ticketCreationData: TicketCreationData = {
-            title: req.body.title || null,
-            content_question: req.body.content_question || null,
+            title: (req.body.title || '').trim() || null,
+            content_question: (req.body.content_question || '').trim() || null,
             time_open: new Date().getTime(),
-            email_for_answer: req.body.email_for_answer || null,
+            email_for_answer: (req.body.email_for_answer || '').trim() || null,
             userID_submit: userID
         }
         if (Object.values(ticketCreationData).includes(null)) {
@@ -25,6 +25,9 @@ export default async function submitTicket(req: Request, res: Response) {
             throw new Error('Could not submit ticket. Please try again.');
         }
         res.status(200);
+        res.json({
+            msg: 'Ticket submitted.'
+        });
         res.end();
     } catch (e) {
         logger.error(e.message, e);
