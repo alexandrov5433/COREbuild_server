@@ -4,7 +4,7 @@ function convertTimeToDate(time: number) {
         month: 'short',
         year: 'numeric'
     });
-    return formater.format(new Date(time));
+    return formater.format(new Date(Number(time)));
 }
 
 export {
