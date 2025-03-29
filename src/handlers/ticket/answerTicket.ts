@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import logger from "../../config/winston.js";
 import { TicketAnswerData } from "../../data/definitions.js";
 import { addAnswerToTicketInDB } from "../../data/ticket.js";
+import answerTicketPerEmail from "../../email/answerTicketPerEmail.js";
 
 export default async function answerTicket(req: Request, res: Response) {
     try {
@@ -31,6 +32,13 @@ export default async function answerTicket(req: Request, res: Response) {
             msg: 'Ticket answered.'
         });
         res.end();
+        answerTicketPerEmail(
+            answeredTicket.title,
+            answeredTicket.time_open,
+            answeredTicket.content_question,
+            answeredTicket.content_answer,
+            answeredTicket.email_for_answer
+        );
     } catch (e) {
         logger.error(e.message, e);
         res.status(400);
