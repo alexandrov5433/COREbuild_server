@@ -20,7 +20,7 @@ export async function createNewTicketInDB(ticketCreationData: TicketCreationData
             ticketCreationData.content_question,
             ticketCreationData.time_open,
             ticketCreationData.email_for_answer,
-            ticketCreationData.userID_submit
+            ticketCreationData.userID_submit || null
         ]);        
         if (res?.rows[0].id) {
             return res.rows[0];
