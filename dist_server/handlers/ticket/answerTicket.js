@@ -1,5 +1,6 @@
 import logger from "../../config/winston.js";
 import { addAnswerToTicketInDB } from "../../data/ticket.js";
+import answerTicketPerEmail from "../../email/answerTicketPerEmail.js";
 export default async function answerTicket(req, res) {
     try {
         const userID = Number(req.cookies?.userSession?.userID) || null;
@@ -28,6 +29,7 @@ export default async function answerTicket(req, res) {
             msg: 'Ticket answered.'
         });
         res.end();
+        answerTicketPerEmail(answeredTicket.title, answeredTicket.time_open, answeredTicket.content_question, answeredTicket.content_answer, answeredTicket.email_for_answer);
     }
     catch (e) {
         logger.error(e.message, e);

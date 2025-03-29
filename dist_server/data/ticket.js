@@ -4,24 +4,21 @@ export async function createNewTicketInDB(ticketCreationData) {
     const client = await pool.connect();
     try {
         const res = await client.query(`
-            INSERT INTO "ticket" VALUES (
-                DEFAULT,
+            INSERT INTO "ticket" (title, status, content_question, time_open, email_for_answer, "userID_submit")
+            VALUES (
                 $1,
                 'open',
                 $2,
-                DEFAULT,
                 $3,
-                DEFAULT,
                 $4,
-                $5,
-                DEFAULT
+                $5
             ) RETURNING *;
         `, [
             ticketCreationData.title,
             ticketCreationData.content_question,
             ticketCreationData.time_open,
             ticketCreationData.email_for_answer,
-            ticketCreationData.userID_submit
+            ticketCreationData.userID_submit || null
         ]);
         if (res?.rows[0].id) {
             return res.rows[0];
