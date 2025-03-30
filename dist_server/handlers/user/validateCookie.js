@@ -32,10 +32,10 @@ export default async function validateCookie(req, res) {
         throw new Error('Invalid cookie.');
     }
     catch (e) {
-        res.status(500);
+        res.status(400);
         res.set({ 'Set-Cookie': `session=0; Max-Age=0; Path=/; HttpOnly; Secure;` });
         res.json({
-            msg: `Error: ${e.message}`
+            msg: e.message
         });
         res.end();
     }

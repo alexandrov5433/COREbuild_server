@@ -336,8 +336,9 @@ export async function editProductInformation(productID, productData) {
     }
 }
 export async function getAllProdcutsCategoriesFromDB() {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT "name" FROM "category";`);
         if (res?.rows.length) {
             return res?.rows.reduce((acc, cur) => {
