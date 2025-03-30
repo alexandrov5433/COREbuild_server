@@ -4,11 +4,11 @@ import { findUserByUserID } from '../../data/user.js';
 
 export default async function validateCookie(req: Request, res: Response) {
     try {
-        const sessionCookie: JwtPayload | null = req.cookies.userSession;
+        const sessionCookie: JwtPayload | null = req.cookies.userSession || null;
         if (!sessionCookie) {
             throw new Error('No cookie was provided.');
         }
-        if (sessionCookie.userID) {
+        if (sessionCookie?.userID) {
             const userData = await findUserByUserID(Number(sessionCookie.userID) || 0);
             if (userData?.userID != Number(sessionCookie.userID)) {
                 throw new Error('Invalid cookie.');
@@ -34,10 +34,10 @@ export default async function validateCookie(req: Request, res: Response) {
         }
         throw new Error('Invalid cookie.');
     } catch (e) {
-        res.status(500);
+        res.status(400);
         res.set({ 'Set-Cookie': `session=0; Max-Age=0; Path=/; HttpOnly; Secure;` });
         res.json({
-            msg: `Error: ${(e as Error).message}`
+            msg: e.message
         });
         res.end();
     }
