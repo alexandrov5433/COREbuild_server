@@ -1,4 +1,4 @@
-import { json, static as static_ } from "express";
+import { json, NextFunction, Request, Response, static as static_ } from "express";
 import cookieParser from 'cookie-parser';
 // import cors from 'cors';
 import { checkCookie } from "../util/cookie.js";
@@ -10,9 +10,22 @@ import logger from "./winston.js";
 
 const appAssetsPath = path.resolve('./dist_app');
 const PDF_SIZE_LIMIT_MB = Number(process.env.PDF_SIZE_LIMIT_MB) || 4;
+const DOMAIN = process.env.DOMAIN || '';
+const NODE_ENV = process.env.NODE_ENV || 'production';
 
 export default async function configExpress(app: any) {
     try {
+        if (NODE_ENV == 'production') {
+            app.use('*',(req: Request, res: Response, next: NextFunction) => {
+                if (!req.secure) {
+                    // case http
+                    const secureURL = DOMAIN + req.originalUrl;
+                    return res.redirect(secureURL);
+                }
+                // case https
+                return next();
+            });
+        }
         app.use(json());
         app.use(cookieParser());
         app.use(checkCookie);

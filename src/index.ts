@@ -8,7 +8,7 @@ import logger from "./config/winston.js";
 
 const HTTP_PORT = process.env.HTTP_PORT || 80;
 const HTTPS_PORT = process.env.HTTPS_PORT || 433;
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const NODE_ENV = process.env.NODE_ENV || 'production';
 const app = express();
 await configExpress(app);
 
@@ -31,6 +31,6 @@ if (NODE_ENV == 'production') {
     });
 } else {
     app.listen(3000, () => {
-        logger.info(`The server is running at http://localhost:3000`);
+        logger.info(`The server is running in development mode at http://localhost:3000`);
     });
 }
