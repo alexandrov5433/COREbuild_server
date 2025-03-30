@@ -1,12 +1,12 @@
 import { pool } from "./postgres.js";
-import { NewPasswordDetails, NewProfileDetails, RegsiterData, UserData } from "./definitions.js";
+import { NewProfileDetails, RegsiterData, UserData } from "./definitions.js";
 import logger from "../config/winston.js";
 
 export async function findUserByUsername(username: string): Promise<UserData | null> {
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE (username='${username}')`)
-        if (res.rows?.[0].userID) {
+        if (res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null;
@@ -21,7 +21,7 @@ export async function checkUsernameTaken(username: string) {
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE (username=$1)`, [username])
-        return (res.rows[0]?.username === username ? true : false);
+        return (res?.rows[0]?.username === username ? true : false);
     } catch (e) {
         logger.error(e.message, e);
         return null;
@@ -33,7 +33,7 @@ export async function checkEmailTaken(email: string) {
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE (email=$1)`, [email])
-        return (res.rows[0]?.email === email ? true : false);
+        return (res?.rows[0]?.email === email ? true : false);
     } catch (e) {
         logger.error(e.message, e);
         return null;
@@ -46,7 +46,7 @@ export async function findUserByUserID(userID: number): Promise<UserData | null>
     const client = await pool.connect();
     try {
         const res = await client.query(`SELECT * FROM "user" WHERE ("userID"=${userID})`)
-        if (res.rows[0].userID) {
+        if (res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null;
@@ -100,16 +100,18 @@ export async function addNewEmployee(registerData: RegsiterData): Promise<UserDa
             INSERT INTO "user" VALUES(
                 DEFAULT,
                 ${true},
-                '${registerData.username}',
-                '${registerData.password}',
-                DEFAULT,
+                $1,
+                $2,
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
                 DEFAULT)
             RETURNING *
-            `);
+            `, [
+                registerData.username,
+                registerData.password
+            ]);
         if (res?.rows[0]?.userID) {
             return res?.rows[0];
         }
@@ -140,7 +142,7 @@ export async function editProfileDetailsInDB(userID: number, newDetails: NewProf
             newDetails.lastname,
             newDetails.address,
         ]);        
-        if (res?.rows[0].userID) {
+        if (res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null
@@ -161,7 +163,7 @@ export async function changePasswordInDB(userID: number, newPasswordHash: string
             WHERE "userID"=$1
             RETURNING *;
         `, [userID, newPasswordHash]);        
-        if (res?.rows[0].userID) {
+        if (res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null
