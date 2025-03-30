@@ -1,4 +1,4 @@
-import { QueryResult } from "pg";
+import { PoolClient, QueryResult } from "pg";
 import { convertCentToWhole } from "../util/currency.js";
 import { ProductCreationData, ProductData, ProductInfosEditingData, ProductsCatalogQueryParams, ShoppingCartData } from "./definitions.js";
 import { pool } from "./postgres.js";
@@ -337,8 +337,9 @@ export async function editProductInformation(productID: number, productData: Pro
 }
 
 export async function getAllProdcutsCategoriesFromDB() {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT "name" FROM "category";`,);
         if (res?.rows.length) {
             return res?.rows.reduce((acc, cur) => {
