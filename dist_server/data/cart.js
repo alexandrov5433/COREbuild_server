@@ -1,8 +1,9 @@
 import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 export async function addProductToCart(userID, productID, count) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const __checkProduct = client.query(`
             SELECT * FROM product
             WHERE (
@@ -67,12 +68,13 @@ export async function addProductToCart(userID, productID, count) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getCartForUser(userID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT "shopping_cart" FROM "user"
             WHERE (
@@ -91,12 +93,13 @@ export async function getCartForUser(userID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function removeProductFromCart(userID, productID, count) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const __checkProduct = client.query(`
             SELECT * FROM product
             WHERE (
@@ -153,12 +156,13 @@ export async function removeProductFromCart(userID, productID, count) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function emptyUserCart(userID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const update = await client.query(`
             UPDATE "user"
             SET "shopping_cart"=$1
@@ -175,7 +179,7 @@ export async function emptyUserCart(userID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 function removeZeroQuantityItems(cart) {

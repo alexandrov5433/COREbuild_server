@@ -1,11 +1,11 @@
 import { findUserByUserID } from '../../data/user.js';
 export default async function validateCookie(req, res) {
     try {
-        const sessionCookie = req.cookies.userSession;
+        const sessionCookie = req.cookies.userSession || null;
         if (!sessionCookie) {
             throw new Error('No cookie was provided.');
         }
-        if (sessionCookie.userID) {
+        if (sessionCookie?.userID) {
             const userData = await findUserByUserID(Number(sessionCookie.userID) || 0);
             if (userData?.userID != Number(sessionCookie.userID)) {
                 throw new Error('Invalid cookie.');

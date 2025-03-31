@@ -1,8 +1,9 @@
 import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 export async function addReview(reviewData) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "review"
             VALUES (
@@ -30,12 +31,13 @@ export async function addReview(reviewData) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function hasCustomerReviewedProduct(userID, productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "review"
             WHERE "reviewerID"=$1 AND "productID"=$2;
@@ -50,12 +52,13 @@ export async function hasCustomerReviewedProduct(userID, productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getReviewsForProduct(productID, currentPage) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         if (currentPage <= 0) {
             currentPage = 1;
         }
@@ -90,12 +93,13 @@ export async function getReviewsForProduct(productID, currentPage) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getRatingAndReviewCountForProduct(productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT "rating" FROM "review"
             WHERE "productID"=$1;
@@ -118,7 +122,7 @@ export async function getRatingAndReviewCountForProduct(productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 //# sourceMappingURL=review.js.map

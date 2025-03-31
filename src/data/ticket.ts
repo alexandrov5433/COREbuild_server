@@ -1,10 +1,12 @@
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 import { TicketCreationData, TicketData, TicketAnswerData, TicketFiltrationOptions } from "./definitions.js";
+import { PoolClient } from "pg";
 
 export async function createNewTicketInDB(ticketCreationData: TicketCreationData): Promise<TicketData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "ticket" (title, status, content_question, time_open, email_for_answer, "userID_submit")
             VALUES (
@@ -30,13 +32,14 @@ export async function createNewTicketInDB(ticketCreationData: TicketCreationData
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function addAnswerToTicketInDB(ticketAnswerData: TicketAnswerData): Promise<TicketData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "ticket" SET
                 "status"='closed',
@@ -59,13 +62,14 @@ export async function addAnswerToTicketInDB(ticketAnswerData: TicketAnswerData):
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function findTicketById(id: number): Promise<TicketData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "ticket" WHERE "id"=$1;
         `, [id]);        
@@ -77,13 +81,14 @@ export async function findTicketById(id: number): Promise<TicketData | null> {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getFilteredTicketsFromDB(filtrationOptions: TicketFiltrationOptions) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         let currentPage = filtrationOptions.currentPage || 1;
         const itemsPerPage = filtrationOptions.itemsPerPage || 4;
         const res = await client.query(`SELECT * FROM "ticket";`);
@@ -123,7 +128,7 @@ export async function getFilteredTicketsFromDB(filtrationOptions: TicketFiltrati
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 

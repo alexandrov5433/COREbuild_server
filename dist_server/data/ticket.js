@@ -1,8 +1,9 @@
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 export async function createNewTicketInDB(ticketCreationData) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "ticket" (title, status, content_question, time_open, email_for_answer, "userID_submit")
             VALUES (
@@ -30,12 +31,13 @@ export async function createNewTicketInDB(ticketCreationData) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function addAnswerToTicketInDB(ticketAnswerData) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "ticket" SET
                 "status"='closed',
@@ -60,12 +62,13 @@ export async function addAnswerToTicketInDB(ticketAnswerData) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function findTicketById(id) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "ticket" WHERE "id"=$1;
         `, [id]);
@@ -79,12 +82,13 @@ export async function findTicketById(id) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getFilteredTicketsFromDB(filtrationOptions) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         let currentPage = filtrationOptions.currentPage || 1;
         const itemsPerPage = filtrationOptions.itemsPerPage || 4;
         const res = await client.query(`SELECT * FROM "ticket";`);
@@ -119,7 +123,7 @@ export async function getFilteredTicketsFromDB(filtrationOptions) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 //# sourceMappingURL=ticket.js.map

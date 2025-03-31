@@ -1,10 +1,11 @@
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 export async function findUserByUsername(username) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE (username='${username}')`);
-        if (res.rows?.[0].userID) {
+        if (res?.rows[0] && res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null;
@@ -14,42 +15,45 @@ export async function findUserByUsername(username) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function checkUsernameTaken(username) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE (username=$1)`, [username]);
-        return (res.rows[0]?.username === username ? true : false);
+        return (res?.rows[0]?.username === username ? true : false);
     }
     catch (e) {
         logger.error(e.message, e);
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function checkEmailTaken(email) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE (email=$1)`, [email]);
-        return (res.rows[0]?.email === email ? true : false);
+        return (res?.rows[0]?.email === email ? true : false);
     }
     catch (e) {
         logger.error(e.message, e);
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function findUserByUserID(userID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE ("userID"=${userID})`);
-        if (res.rows[0].userID) {
+        if (res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null;
@@ -59,12 +63,13 @@ export async function findUserByUserID(userID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function addNewCustomer(registerData) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "user" VALUES(
                 DEFAULT,
@@ -95,26 +100,29 @@ export async function addNewCustomer(registerData) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function addNewEmployee(registerData) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "user" VALUES(
                 DEFAULT,
                 ${true},
-                '${registerData.username}',
-                '${registerData.password}',
-                DEFAULT,
+                $1,
+                $2,
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
                 DEFAULT)
             RETURNING *
-            `);
+            `, [
+            registerData.username,
+            registerData.password
+        ]);
         if (res?.rows[0]?.userID) {
             return res?.rows[0];
         }
@@ -125,12 +133,13 @@ export async function addNewEmployee(registerData) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function editProfileDetailsInDB(userID, newDetails) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "user" SET
                 "email"=$2,
@@ -146,7 +155,7 @@ export async function editProfileDetailsInDB(userID, newDetails) {
             newDetails.lastname,
             newDetails.address,
         ]);
-        if (res?.rows[0].userID) {
+        if (res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null;
@@ -156,19 +165,20 @@ export async function editProfileDetailsInDB(userID, newDetails) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function changePasswordInDB(userID, newPasswordHash) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "user" SET
                 "password"=$2
             WHERE "userID"=$1
             RETURNING *;
         `, [userID, newPasswordHash]);
-        if (res?.rows[0].userID) {
+        if (res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null;
@@ -178,7 +188,7 @@ export async function changePasswordInDB(userID, newPasswordHash) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 //# sourceMappingURL=user.js.map

@@ -22,16 +22,39 @@ export default async function register(req, res) {
         };
         let userData = null;
         if (registerData.is_employee) {
+            const validationObject = validateEmployeeData(registerData);
             const isUsernameTaken = await checkUsernameTaken(registerData.username);
             if (isUsernameTaken == true) {
+                Object.assign(validationObject, {
+                    username: {
+                        valid: false,
+                        touched: true,
+                        msg: 'This username is taken'
+                    },
+                    password: {
+                        valid: false,
+                        touched: true,
+                        msg: ''
+                    },
+                    repeat_password: {
+                        valid: false,
+                        touched: true,
+                        msg: ''
+                    },
+                    authentication_code: {
+                        valid: false,
+                        touched: true,
+                        msg: ''
+                    }
+                });
                 res.status(403);
                 res.json({
-                    msg: `The username: "${registerData.username}" is already taken.`
+                    msg: `The username: "${registerData.username}" is already taken.`,
+                    payload: validationObject
                 });
                 res.end();
                 return;
             }
-            const validationObject = validateEmployeeData(registerData);
             if (isInformationValid(validationObject)) {
                 registerData.password = await bcrypt.hash(registerData.password, HASH_SALT_ROUNDS);
                 userData = await addNewEmployee(registerData);
@@ -47,19 +70,42 @@ export default async function register(req, res) {
             }
         }
         else {
+            const validationObject = validateCustomerData(registerData);
             const areTaken = await Promise.all([
                 checkUsernameTaken(registerData.username),
                 checkEmailTaken(registerData.email)
             ]);
             if (areTaken.includes(true)) {
+                Object.assign(validationObject, {
+                    username: {
+                        valid: !areTaken[0],
+                        touched: true,
+                        msg: `${areTaken[0] ? 'This username is taken' : ''}`
+                    },
+                    email: {
+                        valid: !areTaken[1],
+                        touched: true,
+                        msg: `${areTaken[1] ? 'This email is taken.' : ''}`
+                    },
+                    password: {
+                        valid: false,
+                        touched: true,
+                        msg: ''
+                    },
+                    repeat_password: {
+                        valid: false,
+                        touched: true,
+                        msg: ''
+                    },
+                });
                 res.status(403);
                 res.json({
-                    msg: `The data given for the following fields is in use: ${areTaken[0] ? 'Username' : ''} ${areTaken[1] ? 'Email' : ''}`
+                    msg: `The data given for the following fields is in use: ${areTaken[0] ? 'Username' : ''} ${areTaken[1] ? 'Email' : ''}`,
+                    payload: validationObject
                 });
                 res.end();
                 return;
             }
-            const validationObject = validateCustomerData(registerData);
             if (isInformationValid(validationObject)) {
                 registerData.password = await bcrypt.hash(registerData.password, HASH_SALT_ROUNDS);
                 userData = await addNewCustomer(registerData);
@@ -103,7 +149,7 @@ export default async function register(req, res) {
             }
         });
         res.end();
-        logger.info(`New user registered.`, userData);
+        logger.info('New user registered.', userData);
         if (!registerData.is_employee) {
             sendWelcomeMailOnRegister(userData?.firstname || 'Customer', userData?.lastname || '', userData?.email);
         }
@@ -120,7 +166,7 @@ export default async function register(req, res) {
 function validateEmployeeData(registerData) {
     const usernameValid = /^[A-Za-z0-9@_+?!-]{1,30}$/.test(registerData.username || '');
     const passwordValid = /^[A-Za-z0-9@_+?!-]{5,50}$/.test(registerData.password || '');
-    const repeat_passwordValid = registerData.password === registerData.repeat_password;
+    const repeat_passwordValid = registerData.password && (registerData.password === registerData.repeat_password);
     const authentication_codeValid = registerData.authentication_code === EMPLOYEE_AUTH_CODE;
     return {
         username: {
@@ -148,7 +194,7 @@ function validateEmployeeData(registerData) {
 function validateCustomerData(registerData) {
     const usernameValid = /^[A-Za-z0-9@_+?!-]{1,30}$/.test(registerData.username || '');
     const passwordValid = /^[A-Za-z0-9@_+?!-]{5,50}$/.test(registerData.password || '');
-    const repeat_passwordValid = registerData.password === registerData.repeat_password;
+    const repeat_passwordValid = registerData.password && (registerData.password === registerData.repeat_password);
     const emailValid = /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/.test(registerData.email || '');
     const firstnameValid = /^[A-Za-z]{1,50}$/.test(registerData.firstname || '');
     const lastnameValid = /^[A-Za-z]{1,50}$/.test(registerData.lastname || '');

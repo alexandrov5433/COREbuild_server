@@ -2,8 +2,9 @@ import { convertCentToWhole } from "../util/currency.js";
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 export async function createProduct(productData) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const specsDocIDVal = productData.specsDocID || 'DEFAULT';
         const picturesVal = productData.pictures.length ? productData.pictures : 'DEFAULT';
         const res = await client.query(`
@@ -41,12 +42,13 @@ export async function createProduct(productData) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function searchProducts(queryParams) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         let currentPage = Number(queryParams.currentPage) || 1;
         const itemsPerPage = Number(queryParams.itemsPerPage) || 12;
         const params = Object.entries(queryParams);
@@ -116,12 +118,13 @@ export async function searchProducts(queryParams) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function findProductById(productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT
                 p."productID",
@@ -147,12 +150,13 @@ export async function findProductById(productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function checkProductAvailability(items) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const checks = [];
         itemEntries.forEach(([productID, count]) => {
@@ -186,12 +190,13 @@ export async function checkProductAvailability(items) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function reduceProductAvailability(items) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const updates = [];
         itemEntries.forEach(([productID, count]) => {
@@ -224,12 +229,13 @@ export async function reduceProductAvailability(items) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function increaseProductAvailability(items) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const updates = [];
         itemEntries.forEach(([productID, count]) => {
@@ -262,12 +268,13 @@ export async function increaseProductAvailability(items) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getTotalPriceForProducts(items) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const priceQueries = [];
         itemEntries.forEach(([productID, _]) => {
@@ -301,12 +308,13 @@ export async function getTotalPriceForProducts(items) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function editProductInformation(productID, productData) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         return await client.query(`
             UPDATE product SET
                 "name"=$1,
@@ -332,7 +340,7 @@ export async function editProductInformation(productID, productData) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getAllProdcutsCategoriesFromDB() {
@@ -353,12 +361,13 @@ export async function getAllProdcutsCategoriesFromDB() {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function updateProductThumbnailInDB(newThumbnailID, productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE product SET "thumbnailID"=$1 WHERE "productID"=$2 RETURNING *;
             `, [newThumbnailID, productID]);
@@ -372,12 +381,13 @@ export async function updateProductThumbnailInDB(newThumbnailID, productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function updateProductPicturesInDB(allPictures, productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE product SET "pictures"=$1 WHERE "productID"=$2 RETURNING *;
             `, [allPictures, productID]);
@@ -391,12 +401,13 @@ export async function updateProductPicturesInDB(allPictures, productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function updateProductSpecsDocRefInDB(newSpecsDocRef, productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE product SET "specsDocID"=$1 WHERE "productID"=$2 RETURNING *;
             `, [newSpecsDocRef, productID]);
@@ -410,7 +421,7 @@ export async function updateProductSpecsDocRefInDB(newSpecsDocRef, productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 //# sourceMappingURL=product.js.map

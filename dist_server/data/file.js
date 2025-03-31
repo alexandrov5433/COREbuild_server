@@ -1,8 +1,9 @@
 import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 export async function createFile(fileName) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "file" VALUES(
                 DEFAULT,
@@ -19,12 +20,13 @@ export async function createFile(fileName) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getFileNameById(fileID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM file WHERE "fileID"=$1`, [fileID]);
         return res?.rows[0]?.name || null;
@@ -34,12 +36,13 @@ export async function getFileNameById(fileID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function removeFile(fileID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             DELETE FROM "file" WHERE "fileID"=$1
             RETURNING *
@@ -54,12 +57,13 @@ export async function removeFile(fileID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getFileById(fileID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM file WHERE "fileID"=$1`, [fileID]);
         return res?.rows?.[0] || null;
@@ -69,7 +73,7 @@ export async function getFileById(fileID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 //# sourceMappingURL=file.js.map

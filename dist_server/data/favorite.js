@@ -1,8 +1,9 @@
 import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 export async function createFavorite(userID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "favorite" VALUES (
                 DEFAULT,
@@ -22,12 +23,13 @@ export async function createFavorite(userID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function removeProductFromFavorite(userID, productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "favorite" WHERE "userID"=$1;
         `, [userID]);
@@ -50,12 +52,13 @@ export async function removeProductFromFavorite(userID, productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function addProductToFavorite(userID, productID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "favorite" WHERE "userID"=$1;
         `, [userID]);
@@ -82,12 +85,13 @@ export async function addProductToFavorite(userID, productID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function clearAllProductsFromFavoriteFromDB(userID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const newRes = await client.query(`
             UPDATE "favorite" SET "products"='{}' WHERE "userID"=$2 RETURNING *;
             `);
@@ -102,12 +106,13 @@ export async function clearAllProductsFromFavoriteFromDB(userID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 export async function getFavoriteForUser(userID) {
-    const client = await pool.connect();
+    let client;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "favorite" WHERE "userID"=$1;
             `, [userID]);
@@ -122,7 +127,7 @@ export async function getFavoriteForUser(userID) {
         return null;
     }
     finally {
-        client.release();
+        client?.release();
     }
 }
 //# sourceMappingURL=favorite.js.map
