@@ -1,10 +1,12 @@
+import { PoolClient } from "pg";
 import logger from "../config/winston.js";
 import { FavoriteData } from "./definitions.js";
 import { pool } from "./postgres.js";
 
 export async function createFavorite(userID: number): Promise<FavoriteData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "favorite" VALUES (
                 DEFAULT,
@@ -22,13 +24,14 @@ export async function createFavorite(userID: number): Promise<FavoriteData | nul
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function removeProductFromFavorite(userID: number, productID: number): Promise<FavoriteData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "favorite" WHERE "userID"=$1;
         `, [userID]);
@@ -49,13 +52,14 @@ export async function removeProductFromFavorite(userID: number, productID: numbe
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function addProductToFavorite(userID: number, productID: number): Promise<FavoriteData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "favorite" WHERE "userID"=$1;
         `, [userID]);
@@ -80,13 +84,14 @@ export async function addProductToFavorite(userID: number, productID: number): P
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function clearAllProductsFromFavoriteFromDB(userID: number): Promise<FavoriteData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const newRes = await client.query(`
             UPDATE "favorite" SET "products"='{}' WHERE "userID"=$2 RETURNING *;
             `);
@@ -99,13 +104,14 @@ export async function clearAllProductsFromFavoriteFromDB(userID: number): Promis
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getFavoriteForUser(userID: number): Promise<FavoriteData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "favorite" WHERE "userID"=$1;
             `, [userID]);
@@ -118,6 +124,6 @@ export async function getFavoriteForUser(userID: number): Promise<FavoriteData |
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }

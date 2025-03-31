@@ -5,8 +5,9 @@ import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
 
 export async function createProduct(productData: ProductCreationData): Promise<ProductData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const specsDocIDVal = productData.specsDocID || 'DEFAULT';
         const picturesVal = productData.pictures.length ? productData.pictures : 'DEFAULT';
         const res = await client.query(`
@@ -42,13 +43,14 @@ export async function createProduct(productData: ProductCreationData): Promise<P
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function searchProducts(queryParams: ProductsCatalogQueryParams) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         let currentPage = Number(queryParams.currentPage) || 1;
         const itemsPerPage = Number(queryParams.itemsPerPage) || 12;
         const params = Object.entries(queryParams);
@@ -118,13 +120,14 @@ export async function searchProducts(queryParams: ProductsCatalogQueryParams) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function findProductById(productID: number): Promise<ProductData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT
                 p."productID",
@@ -148,13 +151,14 @@ export async function findProductById(productID: number): Promise<ProductData | 
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function checkProductAvailability(items: ShoppingCartData) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const checks = [];
         itemEntries.forEach(([productID, count]) => {
@@ -187,13 +191,14 @@ export async function checkProductAvailability(items: ShoppingCartData) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function reduceProductAvailability(items: ShoppingCartData) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const updates = [];
         itemEntries.forEach(([productID, count]) => {
@@ -225,13 +230,14 @@ export async function reduceProductAvailability(items: ShoppingCartData) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function increaseProductAvailability(items: ShoppingCartData) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const updates = [];
         itemEntries.forEach(([productID, count]) => {
@@ -263,13 +269,14 @@ export async function increaseProductAvailability(items: ShoppingCartData) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getTotalPriceForProducts(items: ShoppingCartData) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const itemEntries = Object.entries(items);
         const priceQueries = [];
         itemEntries.forEach(([productID, _]) => {
@@ -302,13 +309,14 @@ export async function getTotalPriceForProducts(items: ShoppingCartData) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function editProductInformation(productID: number, productData: ProductInfosEditingData) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         return await client.query(`
             UPDATE product SET
                 "name"=$1,
@@ -332,7 +340,7 @@ export async function editProductInformation(productID: number, productData: Pro
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
@@ -352,13 +360,14 @@ export async function getAllProdcutsCategoriesFromDB() {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function updateProductThumbnailInDB(newThumbnailID: number, productID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE product SET "thumbnailID"=$1 WHERE "productID"=$2 RETURNING *;
             `, [newThumbnailID, productID]);
@@ -370,13 +379,14 @@ export async function updateProductThumbnailInDB(newThumbnailID: number, product
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function updateProductPicturesInDB(allPictures: Array<number>, productID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE product SET "pictures"=$1 WHERE "productID"=$2 RETURNING *;
             `, [allPictures, productID]);
@@ -388,13 +398,14 @@ export async function updateProductPicturesInDB(allPictures: Array<number>, prod
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function updateProductSpecsDocRefInDB(newSpecsDocRef: number | null, productID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE product SET "specsDocID"=$1 WHERE "productID"=$2 RETURNING *;
             `, [newSpecsDocRef, productID]);
@@ -406,6 +417,6 @@ export async function updateProductSpecsDocRefInDB(newSpecsDocRef: number | null
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }

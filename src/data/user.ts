@@ -1,12 +1,14 @@
 import { pool } from "./postgres.js";
 import { NewProfileDetails, RegsiterData, UserData } from "./definitions.js";
 import logger from "../config/winston.js";
+import { PoolClient } from "pg";
 
 export async function findUserByUsername(username: string): Promise<UserData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE (username='${username}')`)
-        if (res?.rows[0]?.userID) {
+        if (res?.rows[0] && res?.rows[0]?.userID) {
             return res.rows[0];
         }
         return null;
@@ -14,37 +16,40 @@ export async function findUserByUsername(username: string): Promise<UserData | n
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 export async function checkUsernameTaken(username: string) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE (username=$1)`, [username])
         return (res?.rows[0]?.username === username ? true : false);
     } catch (e) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 export async function checkEmailTaken(email: string) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE (email=$1)`, [email])
         return (res?.rows[0]?.email === email ? true : false);
     } catch (e) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function findUserByUserID(userID: number): Promise<UserData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`SELECT * FROM "user" WHERE ("userID"=${userID})`)
         if (res?.rows[0]?.userID) {
             return res.rows[0];
@@ -54,13 +59,14 @@ export async function findUserByUserID(userID: number): Promise<UserData | null>
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function addNewCustomer(registerData: RegsiterData): Promise<UserData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "user" VALUES(
                 DEFAULT,
@@ -89,13 +95,14 @@ export async function addNewCustomer(registerData: RegsiterData): Promise<UserDa
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function addNewEmployee(registerData: RegsiterData): Promise<UserData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "user" VALUES(
                 DEFAULT,
@@ -120,13 +127,14 @@ export async function addNewEmployee(registerData: RegsiterData): Promise<UserDa
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function editProfileDetailsInDB(userID: number, newDetails: NewProfileDetails) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "user" SET
                 "email"=$2,
@@ -150,13 +158,14 @@ export async function editProfileDetailsInDB(userID: number, newDetails: NewProf
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function changePasswordInDB(userID: number, newPasswordHash: string) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "user" SET
                 "password"=$2
@@ -171,6 +180,6 @@ export async function changePasswordInDB(userID: number, newPasswordHash: string
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }

@@ -1,9 +1,11 @@
+import { PoolClient } from "pg";
 import logger from "../config/winston.js";
 import { pool } from "./postgres.js";
 
 export async function createCategory(categoryName: string) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         return await client.query(`
                 WITH insertion AS (
                     INSERT INTO category VALUES (
@@ -21,6 +23,6 @@ export async function createCategory(categoryName: string) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }

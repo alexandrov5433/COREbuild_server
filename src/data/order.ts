@@ -2,10 +2,12 @@ import { checkProductAvailability, increaseProductAvailability, reduceProductAva
 import { OrderData, OrderFiltrationOptions } from "./definitions.js";
 import { pool } from "./postgres.js";
 import logger from "../config/winston.js";
+import { PoolClient } from "pg";
 
 export async function addNewOrder(orderData: OrderData) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "order" VALUES (
                 DEFAULT,
@@ -42,13 +44,14 @@ export async function addNewOrder(orderData: OrderData) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function setOrderPaymentStatusToPaid(paypal_order_id: string): Promise<OrderData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "order" SET "payment_status"='paid' WHERE "paypal_order_id"=$1 RETURNING *;
         `, [paypal_order_id]);
@@ -61,13 +64,14 @@ export async function setOrderPaymentStatusToPaid(paypal_order_id: string): Prom
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function deleteOrder(orderID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             DELETE FROM "order" WHERE "id"=$1
             RETURNING *;
@@ -80,13 +84,14 @@ export async function deleteOrder(orderID: number) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function hasCustomerBoughtProduct(userID: number, productID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT "content" -> $2 product_id
             FROM "order"
@@ -100,13 +105,14 @@ export async function hasCustomerBoughtProduct(userID: number, productID: number
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getOrderByID(paypal_order_id: string) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "order" WHERE "paypal_order_id"=$1;
         `, [paypal_order_id]);
@@ -118,13 +124,14 @@ export async function getOrderByID(paypal_order_id: string) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getOrderByOrderID(orderID: number): Promise<OrderData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "order" WHERE "id"=$1;
         `, [orderID]);
@@ -136,13 +143,14 @@ export async function getOrderByOrderID(orderID: number): Promise<OrderData | nu
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltrationOptions, queryingUserID: number, is_employee: boolean) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         let currentPage = filtrationOptions.currentPage || 1;
         const itemsPerPage = filtrationOptions.itemsPerPage || 4;
         let res: any;
@@ -189,7 +197,7 @@ export async function getFilteredOrdersFromDB(filtrationOptions: OrderFiltration
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
@@ -200,8 +208,9 @@ export async function updateOrderShippingDetailsInDB(
         shipment_tracking_code: string | null
     }
 ): Promise<OrderData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             UPDATE "order" SET 
                 "shipping_status"=$2,
@@ -218,6 +227,6 @@ export async function updateOrderShippingDetailsInDB(
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }

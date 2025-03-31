@@ -1,10 +1,12 @@
+import { PoolClient } from "pg";
 import logger from "../config/winston.js";
 import { ReviewData } from "./definitions.js";
 import { pool } from "./postgres.js";
 
 export async function addReview(reviewData: ReviewData): Promise<ReviewData | null> {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             INSERT INTO "review"
             VALUES (
@@ -30,13 +32,14 @@ export async function addReview(reviewData: ReviewData): Promise<ReviewData | nu
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function hasCustomerReviewedProduct(userID: number, productID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT * FROM "review"
             WHERE "reviewerID"=$1 AND "productID"=$2;
@@ -49,13 +52,14 @@ export async function hasCustomerReviewedProduct(userID: number, productID: numb
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getReviewsForProduct(productID: number, currentPage: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         if (currentPage <= 0) {
             currentPage = 1;
         }
@@ -91,13 +95,14 @@ export async function getReviewsForProduct(productID: number, currentPage: numbe
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getRatingAndReviewCountForProduct(productID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT "rating" FROM "review"
             WHERE "productID"=$1;
@@ -118,6 +123,6 @@ export async function getRatingAndReviewCountForProduct(productID: number) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }

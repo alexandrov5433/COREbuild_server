@@ -1,10 +1,12 @@
+import { PoolClient } from "pg";
 import logger from "../config/winston.js";
 import { UserData } from "./definitions.js";
 import { pool } from "./postgres.js";
 
 export async function addProductToCart(userID: number, productID: number, count: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const __checkProduct = client.query(`
             SELECT * FROM product
             WHERE (
@@ -64,13 +66,14 @@ export async function addProductToCart(userID: number, productID: number, count:
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function getCartForUser(userID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const res = await client.query(`
             SELECT "shopping_cart" FROM "user"
             WHERE (
@@ -87,13 +90,14 @@ export async function getCartForUser(userID: number) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function removeProductFromCart(userID: number, productID: number, count: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const __checkProduct = client.query(`
             SELECT * FROM product
             WHERE (
@@ -145,13 +149,14 @@ export async function removeProductFromCart(userID: number, productID: number, c
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
 export async function emptyUserCart(userID: number) {
-    const client = await pool.connect();
+    let client: PoolClient;
     try {
+        client = await pool.connect();
         const update = await client.query(`
             UPDATE "user"
             SET "shopping_cart"=$1
@@ -166,7 +171,7 @@ export async function emptyUserCart(userID: number) {
         logger.error(e.message, e);
         return null;
     } finally {
-        client.release();
+        client?.release();
     }
 }
 
