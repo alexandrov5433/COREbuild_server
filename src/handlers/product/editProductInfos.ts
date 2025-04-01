@@ -4,6 +4,7 @@ import logger from "../../config/winston.js";
 import { ProductInfosEditingData } from "../../data/definitions.js";
 import { reduceSpacesBetweenWordsToOne } from "../../util/string.js";
 import { createCategory } from "../../data/category.js";
+import { toCent } from "../../util/currency.js";
 
 export default async function editProductInfos(req: Request, res: Response) {
     try {
@@ -83,7 +84,7 @@ export default async function editProductInfos(req: Request, res: Response) {
                 .end();
             return;
         }
-        productData.price = Number(Number.parseFloat(`${productData.price}`).toFixed(2)) * 100; // converting to cent
+        productData.price = toCent(productData.price.toString()); // converting to cent
         productData.categoryID = (await createCategory(productData.category))?.rows[0]?.categoryID;
         const updatedProduct = await editProductInformation(productID, productData);
         if (!updatedProduct?.rows[0]?.productID) {
