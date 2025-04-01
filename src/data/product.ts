@@ -8,8 +8,8 @@ export async function createProduct(productData: ProductCreationData): Promise<P
     let client: PoolClient;
     try {
         client = await pool.connect();
-        const specsDocIDVal = productData.specsDocID || 'DEFAULT';
-        const picturesVal = productData.pictures.length ? productData.pictures : 'DEFAULT';
+        const specsDocIDVal = productData?.specsDocID || 'DEFAULT';
+        const picturesVal = productData?.pictures?.length ? productData?.pictures : 'DEFAULT';
         const res = await client.query(`
             INSERT INTO "product" VALUES(
                 DEFAULT,
@@ -35,7 +35,7 @@ export async function createProduct(productData: ProductCreationData): Promise<P
                 productData.thumbnailID,
                 picturesVal 
             ]);
-        if (res?.rows[0].productID) {
+        if (res?.rows && res?.rows[0]?.productID) {
             return res?.rows[0];
         }
         return null;
