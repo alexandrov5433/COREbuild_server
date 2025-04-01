@@ -18,7 +18,7 @@ export default async function editProductInfos(req: Request, res: Response) {
         }
         const productData: ProductInfosEditingData = {
             name: (req.body.name as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
-            description: (req.body.description as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
+            description: (req.body.description as string).trim() || null,
             category: reduceSpacesBetweenWordsToOne((req.body.category as string).toLowerCase().replaceAll(/[^A-Za-z ]/g, '')) || null,
             categoryID: null,
             price: Number(req.body.price),
