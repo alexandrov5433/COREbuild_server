@@ -27,7 +27,7 @@ export default async function addProduct(req: Request, res: Response) {
             description: (req.body.description as string).trim() || null,
             category: reduceSpacesBetweenWordsToOne((req.body.category as string).toLowerCase().replaceAll(/[^A-Za-z ]/g, '')) || null,
             categoryID: null,
-            price: Number(req.body.price),
+            price: req.body.price,
             stockCount: Number(req.body.stockCount),
             manufacturer: (req.body.manufacturer as string).trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
             thumbnailID: 0,
@@ -47,7 +47,7 @@ export default async function addProduct(req: Request, res: Response) {
         if (!productData.category) {
             throw new Error('The product category is missing.');
         }
-        if (!productData.price || productData.price <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price.toString())) {
+        if (!productData.price || Number(productData.price) <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price as string)) {
             throw new Error(`The price must be greater than 0. Please use a dot as a decimal separator. E.g.: '01.23', '23.03' or '0.01'.`);
         }
         if (Number.isNaN(productData.stockCount) || productData.stockCount < 0 || !Number.isInteger(productData.stockCount)) {
@@ -125,7 +125,7 @@ export default async function addProduct(req: Request, res: Response) {
         productData.pictures = pictures.length > 0 ? pictures : null;
         productData.specsDocID = specsDocID;
 
-        productData.price = toCent(productData.price.toString()); // converting to cent
+        productData.price = toCent(productData.price as string); // converting to cent
 
         productData.categoryID = (await createCategory(productData.category))?.rows[0]?.categoryID;
         const newProduct = await createProduct(productData);

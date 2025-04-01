@@ -28,7 +28,7 @@ export type ProductCreationData = {
     description: string,
     category: string,
     categoryID: number,
-    price: number,
+    price: number | string,
     stockCount: number,
     manufacturer: string,
     specsDocID: number,
@@ -41,7 +41,7 @@ export type ProductInfosEditingData = {
     description: string,
     category: string,
     categoryID: number,
-    price: number,
+    price: number | string,
     stockCount: number,
     manufacturer: string
 }
