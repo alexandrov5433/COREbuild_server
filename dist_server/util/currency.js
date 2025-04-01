@@ -5,5 +5,12 @@ function convertCentToWhole(cent) {
     }
     return newCent / 100;
 }
-export { convertCentToWhole };
+function toCent(num) {
+    num = num.toString();
+    if (num.indexOf('.') == -1) {
+        return Number(num + '00');
+    }
+    return Number(num.replace('.', ''));
+}
+export { convertCentToWhole, toCent };
 //# sourceMappingURL=currency.js.map

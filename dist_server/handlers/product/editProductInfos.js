@@ -2,6 +2,7 @@ import { editProductInformation, findProductById } from "../../data/product.js";
 import logger from "../../config/winston.js";
 import { reduceSpacesBetweenWordsToOne } from "../../util/string.js";
 import { createCategory } from "../../data/category.js";
+import { toCent } from "../../util/currency.js";
 export default async function editProductInfos(req, res) {
     try {
         const productID = Number(req.params.productID) || null;
@@ -15,10 +16,10 @@ export default async function editProductInfos(req, res) {
         }
         const productData = {
             name: req.body.name.trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
-            description: req.body.description.trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
+            description: req.body.description.trim() || null,
             category: reduceSpacesBetweenWordsToOne(req.body.category.toLowerCase().replaceAll(/[^A-Za-z ]/g, '')) || null,
             categoryID: null,
-            price: Number(req.body.price),
+            price: req.body.price,
             stockCount: Number(req.body.stockCount),
             manufacturer: req.body.manufacturer.trim().replaceAll(/[%&\$\*_'"]/g, '') || null
         };
@@ -55,7 +56,7 @@ export default async function editProductInfos(req, res) {
                 .end();
             return;
         }
-        if (!productData.price || productData.price <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price.toString())) {
+        if (!productData.price || Number(productData.price) <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price)) {
             res.status(400)
                 .json({
                 msg: `The price must be greater than 0. Please use a dot as a decimal separator. E.g.: '01.23', '23.03' or '0.01'.`
@@ -79,7 +80,7 @@ export default async function editProductInfos(req, res) {
                 .end();
             return;
         }
-        productData.price = Number(Number.parseFloat(`${productData.price}`).toFixed(2)) * 100; // converting to cent
+        productData.price = toCent(productData.price); // converting to cent
         productData.categoryID = (await createCategory(productData.category))?.rows[0]?.categoryID;
         const updatedProduct = await editProductInformation(productID, productData);
         if (!updatedProduct?.rows[0]?.productID) {

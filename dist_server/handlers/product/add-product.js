@@ -5,6 +5,7 @@ import { createProduct } from "../../data/product.js";
 import { createCategory } from "../../data/category.js";
 import logger from "../../config/winston.js";
 import { reduceSpacesBetweenWordsToOne } from "../../util/string.js";
+import { toCent } from "../../util/currency.js";
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
 const MAX_PICTURE_COUNT = Number(process.env.MAX_PICTURE_COUNT) || 5;
@@ -20,7 +21,7 @@ export default async function addProduct(req, res) {
             description: req.body.description.trim() || null,
             category: reduceSpacesBetweenWordsToOne(req.body.category.toLowerCase().replaceAll(/[^A-Za-z ]/g, '')) || null,
             categoryID: null,
-            price: Number(req.body.price),
+            price: req.body.price,
             stockCount: Number(req.body.stockCount),
             manufacturer: req.body.manufacturer.trim().replaceAll(/[%&\$\*_'"]/g, '') || null,
             thumbnailID: 0,
@@ -39,7 +40,7 @@ export default async function addProduct(req, res) {
         if (!productData.category) {
             throw new Error('The product category is missing.');
         }
-        if (!productData.price || productData.price <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price.toString())) {
+        if (!productData.price || Number(productData.price) <= 0 || !/^[0-9]+(?:\.[0-9]{2}){0,1}$/.test(productData.price)) {
             throw new Error(`The price must be greater than 0. Please use a dot as a decimal separator. E.g.: '01.23', '23.03' or '0.01'.`);
         }
         if (Number.isNaN(productData.stockCount) || productData.stockCount < 0 || !Number.isInteger(productData.stockCount)) {
@@ -117,7 +118,7 @@ export default async function addProduct(req, res) {
         productData.thumbnailID = thumbnailID;
         productData.pictures = pictures.length > 0 ? pictures : null;
         productData.specsDocID = specsDocID;
-        productData.price = Number(Number.parseFloat(`${productData.price}`).toFixed(2)) * 100; // converting to cent
+        productData.price = toCent(productData.price); // converting to cent
         productData.categoryID = (await createCategory(productData.category))?.rows[0]?.categoryID;
         const newProduct = await createProduct(productData);
         if (!newProduct) {

@@ -5,8 +5,8 @@ export async function createProduct(productData) {
     let client;
     try {
         client = await pool.connect();
-        const specsDocIDVal = productData.specsDocID || 'DEFAULT';
-        const picturesVal = productData.pictures.length ? productData.pictures : 'DEFAULT';
+        const specsDocIDVal = productData?.specsDocID || null;
+        const picturesVal = productData?.pictures?.length ? productData?.pictures : '{}';
         const res = await client.query(`
             INSERT INTO "product" VALUES(
                 DEFAULT,
@@ -32,7 +32,7 @@ export async function createProduct(productData) {
             productData.thumbnailID,
             picturesVal
         ]);
-        if (res?.rows[0].productID) {
+        if (res?.rows && res?.rows[0]?.productID) {
             return res?.rows[0];
         }
         return null;
