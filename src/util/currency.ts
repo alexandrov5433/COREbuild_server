@@ -6,6 +6,15 @@ function convertCentToWhole(cent: number) {
     return newCent / 100;
 }
 
+function toCent(num: string): number {
+    num = num.toString();
+    if (num.indexOf('.') == -1) {
+        return Number(num + '00');
+    }
+    return Number(num.replace('.', ''));
+}
+
 export {
-    convertCentToWhole
+    convertCentToWhole,
+    toCent
 };

@@ -8,6 +8,7 @@ import { FileData, ProductCreationData } from "../../data/definitions.js";
 import { createCategory } from "../../data/category.js";
 import logger from "../../config/winston.js";
 import { reduceSpacesBetweenWordsToOne } from "../../util/string.js";
+import { toCent } from "../../util/currency.js";
 
 const DOCS_STORAGE_PATH = path.resolve('./fileStorage/docs');
 const PICS_STORAGE_PATH = path.resolve('./fileStorage/pics');
@@ -124,7 +125,7 @@ export default async function addProduct(req: Request, res: Response) {
         productData.pictures = pictures.length > 0 ? pictures : null;
         productData.specsDocID = specsDocID;
 
-        productData.price = Number(Number.parseFloat(`${productData.price}`).toFixed(2)) * 100; // converting to cent
+        productData.price = toCent(productData.price.toString()); // converting to cent
 
         productData.categoryID = (await createCategory(productData.category))?.rows[0]?.categoryID;
         const newProduct = await createProduct(productData);
