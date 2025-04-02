@@ -23,6 +23,14 @@ export default async function addNewReview(req: Request, res: Response) {
             isVerifiedPurchase: false,
             productID: Number(req.body.productID) || null
         }
+        if (!reviewData.rating || !reviewData.comment) {
+            res.status(400);
+            res.json({
+                msg: 'Both rating and comment are needed to submit a review.'
+            });
+            res.end();
+            return;
+        }
         if (!reviewData.productID) {
             res.status(400);
             res.json({
