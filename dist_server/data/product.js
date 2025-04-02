@@ -169,10 +169,12 @@ export async function checkProductAvailability(items) {
         const availableProducts = {};
         const unavailableProducts = {};
         for (let i = 0; i < results.length; i++) {
-            const val = results[i].rows[0].stockCount || null;
             const [id, count] = itemEntries[i];
-            if (Number.isInteger(val)) {
-                availableProducts[id] = count;
+            if (results[i]?.rows?.length) {
+                const val = results[i]?.rows[0]?.stockCount || null;
+                if (Number.isInteger(val)) {
+                    availableProducts[id] = count;
+                }
             }
             else {
                 allProductsAreAvailable = false;
@@ -210,7 +212,7 @@ export async function reduceProductAvailability(items) {
         let allProductsWereSuccessfullyReduced = true;
         const reducedProducts = {};
         for (let i = 0; i < results.length; i++) {
-            const val = results[i].rows[0].stockCount || null;
+            const val = results[i].rows[0].stockCount ?? 0;
             if (Number.isInteger(val)) {
                 const [reducedId, reducedCount] = itemEntries[i];
                 reducedProducts[reducedId] = reducedCount;
