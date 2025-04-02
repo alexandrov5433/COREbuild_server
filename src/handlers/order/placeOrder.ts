@@ -123,7 +123,7 @@ export default async function placeOrder(req: Request, res: Response) {
                 // false or null (error)
                 res.status(400);
                 res.json({
-                    msg: 'And error occured while processing your request. Please try again later or contact us.',
+                    msg: 'An error occured while processing your request. Please try again later or contact us.',
                 });
                 res.end();
                 return;
