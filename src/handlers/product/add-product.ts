@@ -99,13 +99,14 @@ export default async function addProduct(req: Request, res: Response) {
         let specsDocID = null;
         if (picturesFiles) {
             if (picturesFiles instanceof Array) {
-                picturesFiles.forEach(async f => {
-                    const newPictureName = `${uuidv4()}---${f.name}`;
-                    f.name = newPictureName;
-                    f.mv(`${PICS_STORAGE_PATH}/${newPictureName}`);
+                for (let i = 0; i < picturesFiles.length; i++) {
+                    const file = picturesFiles[i];
+                    const newPictureName = `${uuidv4()}---${file.name}`;
+                    file.name = newPictureName;
+                    file.mv(`${PICS_STORAGE_PATH}/${newPictureName}`);
                     const newPicID = (await createFile(newPictureName) as FileData)?.fileID;
                     pictures.push(newPicID);
-                });
+                }
             } else {
                 const newPictureName = `${uuidv4()}---${picturesFiles.name}`;
                 picturesFiles.name = newPictureName;
