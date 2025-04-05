@@ -101,13 +101,6 @@ export default async function addProduct(req, res) {
                     const newPicID = (await createFile(newPictureName))?.fileID;
                     pictures.push(newPicID);
                 }
-                // picturesFiles.forEach(async f => {
-                //     const newPictureName = `${uuidv4()}---${f.name}`;
-                //     f.name = newPictureName;
-                //     f.mv(`${PICS_STORAGE_PATH}/${newPictureName}`);
-                //     const newPicID = (await createFile(newPictureName) as FileData)?.fileID;
-                //     pictures.push(newPicID);
-                // });
             }
             else {
                 const newPictureName = `${uuidv4()}---${picturesFiles.name}`;
